@@ -2,6 +2,8 @@ import { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 import { Text, Title } from '@/Components/Typography';
+import { useNavigate } from 'react-router-dom';
+import { RoutesCreator } from '@/Enums';
 
 const AddIcon = () => (
     <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,7 +57,7 @@ const ImageContainer = styled.div`
     background: #f0f0f0; /* Заглушка под изображение */
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
-    
+
     img {
         width: 100%;
         height: 218px;
@@ -104,9 +106,15 @@ type BusinessCardsFeedProps = {
 };
 
 export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ businesses }) => {
+    const navigate = useNavigate();
+
+    const handleClickAddCard = () => {
+        navigate(RoutesCreator.BUSINESS_EDITOR);
+    };
+
     return (
         <FeedContainer>
-            <AddCard>
+            <AddCard onClick={handleClickAddCard}>
                 <AddCardContent>
                     <AddIcon />
                     <Title size="h6" weight="semibold">
