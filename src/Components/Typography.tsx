@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { HTMLAttributes } from 'react';
 
 const titleSizes = {
     h1: '32px',
@@ -24,24 +25,25 @@ const fontWeights = {
 } as const;
 
 const colors = {
-    general: '#333',
-    secondary: '#666',
+    general: '#000',
+    secondary: 'rgba(128, 128, 128, 0.55)',
     accent: '#007BFF',
 } as const;
 
-interface TypographyProps {
+export type TypographyProps = {
     size?: keyof typeof titleSizes | keyof typeof textSizes;
     color?: keyof typeof colors;
     weight?: keyof typeof fontWeights;
     underline?: boolean;
     strikethrough?: boolean;
-}
+} & HTMLAttributes<HTMLParagraphElement>;
 
 const typographyStyles = css<TypographyProps>`
     font-size: ${({ size }) =>
         size ? titleSizes[size as keyof typeof titleSizes] || textSizes[size as keyof typeof textSizes] : '16px'};
     font-weight: ${({ weight }) => (weight ? fontWeights[weight] : 400)};
     color: ${({ color }) => (color ? colors[color] : colors.general)};
+    letter-spacing: -0.03em;
     text-decoration: ${({ underline, strikethrough }) =>
         underline && strikethrough
             ? 'underline line-through'

@@ -8,37 +8,36 @@ const spin = keyframes`
 `;
 
 const StyledButton = styled.button<{ $loading?: boolean }>`
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
+    padding: 8px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 133%;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: ${({ theme }) => theme.spacing(1)}px;
     transition:
         background-color 0.2s ease,
         opacity 0.2s ease;
-    min-width: 100px;
+    min-width: 50px;
+    background-color: ${({ theme }) => theme.colors.button.primary};
 
     ${({ disabled, $loading }) =>
         disabled || $loading
             ? css`
-                  background-color: ${({ theme }) => theme.colors.button.disabled};
+                  opacity: 0.35;
                   cursor: not-allowed;
               `
             : css`
-                  background-color: ${({ theme }) => theme.colors.button.primary};
-
                   &:hover {
-                      background-color: ${({ theme }) => theme.colors.button.hover};
+                      opacity: 0.85;
                   }
 
                   &:active {
-                      background-color: ${({ theme }) => theme.colors.button.active};
+                      opacity: 0.65;
                   }
               `}
 `;

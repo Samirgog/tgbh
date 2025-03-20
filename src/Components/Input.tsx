@@ -1,6 +1,6 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Text } from '@/Components/Typography';
-import { FunctionComponent, HTMLAttributes, InputHTMLAttributes } from 'react';
+import { FunctionComponent, InputHTMLAttributes } from 'react';
 
 const InputContainer = styled.div`
     display: flex;
@@ -8,13 +8,14 @@ const InputContainer = styled.div`
     gap: ${({ theme }) => theme.spacing(0.5)};
 `;
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<{ $invalid: boolean }>`
     width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid ${({ theme }) => theme.colors.border};
-    background: ${({ theme }) => theme.colors.inputBackground};
+    min-width: 34px;
+    padding: 13px 16px;
+    font-size: 14px;
+    border-radius: 12px;
+    border: 1.8px solid ${({ theme }) => theme.colors.border};
+    background: ${({ theme }) => theme.colors.input.background};
     color: ${({ theme }) => theme.colors.textSecondary};
 
     &::placeholder {
@@ -25,21 +26,24 @@ const StyledInput = styled.input`
         border-color: ${({ theme }) => theme.colors.primary};
         outline: none;
     }
+
+    ${({ $invalid }) =>
+        $invalid &&
+        css`
+            border-color: ${({ theme }) => theme.colors.error};
+        `}
 `;
 
 type Props = {
     label?: string;
+    invalid?: boolean;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-export const Input: FunctionComponent<Props> = ({ label, ...attrs }) => {
+export const Input: FunctionComponent<Props> = ({ label, invalid = false, ...attrs }) => {
     return (
         <InputContainer>
-            {label && (
-                <Text size="b2" weight="semibold">
-                    {label}
-                </Text>
-            )}
-            <StyledInput {...attrs} />
+            {label && <Text size="b1">{label}</Text>}
+            <StyledInput $invalid={invalid} {...attrs} />
         </InputContainer>
     );
 };

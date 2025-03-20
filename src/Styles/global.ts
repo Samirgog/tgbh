@@ -13,6 +13,11 @@ export const GlobalStyles = createGlobalStyle`
       font-family: 'Roboto', sans-serif;
       background-color: #fff;
       color: #1f2937;
+      height: 100vh;
+        
+        #root {
+            height: 100vh;
+        }
     }
 
     a {

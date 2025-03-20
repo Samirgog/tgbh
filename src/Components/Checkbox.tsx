@@ -51,7 +51,7 @@ export const Checkbox: FunctionComponent<Props> = ({ checked, onChange, label })
                     />
                 </svg>
             </StyledCheckbox>
-            {label && <Text size="b1">{label}</Text>}
+            {label && <Text size="b2">{label}</Text>}
         </CheckboxContainer>
     );
 };

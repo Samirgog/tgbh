@@ -10,7 +10,25 @@ import { FunctionComponent } from 'react';
 const Form = styled.form`
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+`;
+
+const FormInner = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing(4)};
+`;
+
+const InputsWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
     gap: ${({ theme }) => theme.spacing(2)};
+`;
+
+const ButtonWrapper = styled.div`
+    display: flex;
+    align-self: center;
 `;
 
 type PersonalInfoForm = {
@@ -40,50 +58,71 @@ export const StepPersonalInfo: FunctionComponent = () => {
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
-            <Controller
-                name="firstName"
-                control={control}
-                render={({ field }) => <Input {...field} label="Имя" placeholder="Введите имя" />}
-            />
-            <Controller
-                name="lastName"
-                control={control}
-                render={({ field }) => <Input {...field} label="Фамилия" placeholder="Введите фамилию" />}
-            />
-            <Controller
-                name="middleName"
-                control={control}
-                render={({ field }) => (
-                    <Input {...field} label="Отчество (при наличии)" placeholder="Введите отчество" />
-                )}
-            />
-            <Controller
-                name="isCompanyOwner"
-                control={control}
-                render={({ field }) => (
-                    <Checkbox checked={field.value} onChange={field.onChange} label="Я являюсь владельцем компании" />
-                )}
-            />
-            <Controller
-                name="email"
-                control={control}
-                render={({ field }) => <Input {...field} label="Ваша почта" placeholder="Введите email" />}
-            />
-            <Controller
-                name="acceptedTerms"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                    <Checkbox
-                        checked={field.value}
-                        onChange={field.onChange}
-                        label="Я согласен на обработку персональных данных"
+            <FormInner>
+                <InputsWrapper>
+                    <Controller
+                        name="firstName"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field, fieldState: { invalid } }) => (
+                            <Input {...field} invalid={invalid} label="Имя" placeholder="Введите имя" />
+                        )}
                     />
-                )}
-            />
-            <Button type="submit" disabled={!isValid}>
-                Продолжить
-            </Button>
+                    <Controller
+                        name="lastName"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field, fieldState: { invalid } }) => (
+                            <Input {...field} invalid={invalid} label="Фамилия" placeholder="Введите фамилию" />
+                        )}
+                    />
+                    <Controller
+                        name="middleName"
+                        control={control}
+                        render={({ field }) => (
+                            <Input {...field} label="Отчество (при наличии)" placeholder="Введите отчество" />
+                        )}
+                    />
+                    <Controller
+                        name="isCompanyOwner"
+                        control={control}
+                        render={({ field }) => (
+                            <Checkbox
+                                checked={field.value}
+                                onChange={field.onChange}
+                                label="Я являюсь владельцем компании"
+                            />
+                        )}
+                    />
+                </InputsWrapper>
+                <InputsWrapper>
+                    <Controller
+                        name="email"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field, fieldState: { invalid } }) => (
+                            <Input {...field} invalid={invalid} label="Ваша почта" placeholder="Введите email" />
+                        )}
+                    />
+                    <Controller
+                        name="acceptedTerms"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                            <Checkbox
+                                checked={field.value}
+                                onChange={field.onChange}
+                                label="Я согласен на обработку персональных данных"
+                            />
+                        )}
+                    />
+                </InputsWrapper>
+            </FormInner>
+            <ButtonWrapper>
+                <Button type="submit" disabled={!isValid}>
+                    Продолжить
+                </Button>
+            </ButtonWrapper>
         </Form>
     );
 };
