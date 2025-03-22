@@ -1,32 +1,53 @@
-import {
+import React, {
     forwardRef,
     ForwardRefExoticComponent,
     HTMLAttributes,
     PropsWithChildren,
     PropsWithoutRef,
     RefAttributes,
+    useMemo,
 } from 'react';
-import styled from 'styled-components';
-import { Image, Content } from './Sections';
+import styled, { css } from 'styled-components';
 
-const Chip = styled.div`
+import { CategoryChipContext } from './CategoryChip.context';
+import { Content, Image } from './Sections';
+
+const Chip = styled.div<{ $selected: boolean }>`
     display: flex;
-    gap: ${({ theme }) => theme.spacing(0.5)};
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing(1)};
     padding: 4px 16px 4px 4px;
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 9999px;
+
+    ${({ $selected }) =>
+        $selected &&
+        css`
+            background-color: ${({ theme }) => theme.colors.editor.categoryChip.backgroundColor};
+        `}
 `;
 
-type ChipProps = HTMLAttributes<HTMLDivElement>;
+type ChipProps = {
+    selected?: boolean;
+} & HTMLAttributes<HTMLDivElement>;
 
 type CategoryChipComponent = {
     Image: typeof Image;
     Content: typeof Content;
 } & ForwardRefExoticComponent<PropsWithoutRef<PropsWithChildren<ChipProps>> & RefAttributes<HTMLDivElement>>;
 
-const CategoryChip: CategoryChipComponent = Object.assign(
-    forwardRef<HTMLDivElement, ChipProps>(({ children }, ref) => {
-        return <Chip>{children}</Chip>;
-    }),
-    { Image, Content },
-);
+const ForwardedCategoryChip = forwardRef<HTMLDivElement, ChipProps>(({ selected = false, children, ...attrs }, ref) => {
+    const context = useMemo(() => ({ selected }), [selected]);
+
+    return (
+        <CategoryChipContext.Provider value={context}>
+            <Chip $selected={selected} ref={ref} {...attrs}>
+                {children}
+            </Chip>
+        </CategoryChipContext.Provider>
+    );
+});
+
+ForwardedCategoryChip.displayName = 'CategoryChip';
+
+export const CategoryChip: CategoryChipComponent = Object.assign(ForwardedCategoryChip, { Image, Content });

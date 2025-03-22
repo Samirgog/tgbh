@@ -1,6 +1,7 @@
-import React, { FunctionComponent, HTMLAttributes } from 'react';
-import { useURLResourceLoadControl } from '@/Hooks/useURLResourceLoadControl';
+import React, { FunctionComponent, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
+
+import { useURLResourceLoadControl } from '@/Hooks/useURLResourceLoadControl';
 
 const Container = styled.div`
     display: flex;
@@ -17,22 +18,21 @@ const Container = styled.div`
 `;
 
 type Props = {
-    imageSrc: string;
+    imageSrc?: string;
+    stub?: ReactNode;
 } & HTMLAttributes<HTMLImageElement>;
 
-export const Image: FunctionComponent<Props> = ({ imageSrc, onError, ...attrs }) => {
+export const Image: FunctionComponent<Props> = ({ imageSrc, stub, onError, ...attrs }) => {
     const { currentSrc, isLoadError, getHandlersForElement } = useURLResourceLoadControl<HTMLImageElement>({
         src: imageSrc,
         onError,
     });
 
-    if (isLoadError) {
+    if (isLoadError && !stub) {
         return null;
     }
 
     return (
-        <Container>
-            <img alt="" src={currentSrc} {...attrs} {...getHandlersForElement()} />
-        </Container>
+        <Container>{stub ? stub : <img alt="" src={currentSrc} {...attrs} {...getHandlersForElement()} />}</Container>
     );
 };

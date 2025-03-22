@@ -15,6 +15,13 @@ export const theme = {
         button: {
             primary: '#007aff',
         },
+        editor: {
+            previewZoneBackground: '#F8FAFC',
+            previewZoneBorder: '#dddddd',
+            categoryChip: {
+                backgroundColor: '#ba1924',
+            },
+        },
     },
     spacing: (factor: number) => `${factor * 8}px`,
 };

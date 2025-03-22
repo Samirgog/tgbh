@@ -1,4 +1,4 @@
-import {
+import React, {
     forwardRef,
     ForwardRefExoticComponent,
     HTMLAttributes,
@@ -7,7 +7,8 @@ import {
     RefAttributes,
 } from 'react';
 import styled from 'styled-components';
-import { Image, Content } from './Sections';
+
+import { Content, Image } from './Sections';
 
 const Card = styled.div`
     border-radius: 24px;
@@ -34,9 +35,10 @@ type CatalogCardComponent = {
     Content: typeof Content;
 } & ForwardRefExoticComponent<PropsWithoutRef<PropsWithChildren<CardProps>> & RefAttributes<HTMLDivElement>>;
 
-const CatalogCard: CatalogCardComponent = Object.assign(
-    forwardRef<HTMLDivElement, CardProps>(({ children }, ref) => {
-        return <Card>{children}</Card>;
-    }),
-    { Image, Content },
-);
+const ForwardedCatalogCard = forwardRef<HTMLDivElement, CardProps>(({ children }, ref) => {
+    return <Card ref={ref}>{children}</Card>;
+});
+
+ForwardedCatalogCard.displayName = 'CatalogCard';
+
+export const CatalogCard: CatalogCardComponent = Object.assign(ForwardedCatalogCard, { Image, Content });

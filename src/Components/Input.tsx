@@ -1,6 +1,7 @@
-import styled, { css } from 'styled-components';
-import { Text } from '@/Components/Typography';
 import { FunctionComponent, InputHTMLAttributes } from 'react';
+import styled, { css } from 'styled-components';
+
+import { Text } from '@/Components/Typography';
 
 const InputContainer = styled.div`
     display: flex;

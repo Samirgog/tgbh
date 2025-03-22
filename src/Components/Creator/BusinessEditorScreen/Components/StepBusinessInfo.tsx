@@ -1,12 +1,13 @@
-import { Controller, useForm } from 'react-hook-form';
-import { useBusinessEditorStore } from '@/Store/BusinessEditor';
-import styled from 'styled-components';
-import { Input } from '@/Components/Input';
-import { StepBusinessEditor } from '@/Enums';
-import { Button } from '@/Components/Button';
 import { FunctionComponent } from 'react';
-import { Text } from '@/Components/Typography';
+import { Controller, useForm } from 'react-hook-form';
+import styled from 'styled-components';
+
+import { Button } from '@/Components/Button';
 import { FileUploader } from '@/Components/FileUploader';
+import { Input } from '@/Components/Input';
+import { Text } from '@/Components/Typography';
+import { StepBusinessEditor } from '@/Enums';
+import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`
     display: flex;
@@ -73,7 +74,7 @@ export const StepBusinessInfo: FunctionComponent = () => {
                     <Text size="b3" color="secondary">
                         * Изображение будет видно всем клиентам на главной странице вашего бизнес—магазина
                     </Text>
-                    <FileUploader />
+                    <FileUploader label="Загрузить изображение" />
                 </UploaderZone>
             </InputsWrapper>
             <ButtonWrapper>

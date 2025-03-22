@@ -1,10 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import { ReceiveWays, StepBusinessEditor } from '@/Enums';
-import styled from 'styled-components';
-import { Text, Title } from '@/Components/Typography';
 import { Controller, useForm } from 'react-hook-form';
-import { MultiSelect } from '@/Components/MultiSelect';
+import styled from 'styled-components';
+
 import { Button } from '@/Components/Button';
+import { MultiSelect } from '@/Components/MultiSelect';
+import { Text, Title } from '@/Components/Typography';
+import { ReceiveWays, StepBusinessEditor } from '@/Enums';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`
@@ -59,7 +60,7 @@ export const StepReceiveInfo: FunctionComponent = () => {
 
     const onSubmit = (data: ReceiveInfoForm) => {
         updateReceiveInfo(data);
-        setStep(StepBusinessEditor.RECEIVE_INFO);
+        setStep(StepBusinessEditor.CATALOG_CONSTRUCTOR);
     };
 
     return (

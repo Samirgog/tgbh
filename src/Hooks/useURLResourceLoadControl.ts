@@ -1,7 +1,7 @@
 import { HTMLAttributes, useEffect, useState } from 'react';
 
 type Params<T extends HTMLVideoElement | HTMLImageElement> = {
-    src: string;
+    src?: string;
 } & HTMLAttributes<T>;
 
 export function useURLResourceLoadControl<T extends HTMLVideoElement | HTMLImageElement>({ src, ...attrs }: Params<T>) {

@@ -1,6 +1,6 @@
+import { Loader2, Paperclip, RotateCcw, X } from 'lucide-react';
 import { ChangeEvent, FunctionComponent, useState } from 'react';
 import styled from 'styled-components';
-import { Paperclip, X, RotateCcw, Loader2 } from 'lucide-react';
 
 const Container = styled.div`
     display: flex;
@@ -56,10 +56,11 @@ const IconWrapper = styled.div<{ $status?: UploadStatus }>`
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
 type FileUploadProps = {
+    label?: string;
     onFileUpload?: (file: File) => Promise<boolean>;
 };
 
-export const FileUploader: FunctionComponent<FileUploadProps> = ({ onFileUpload }) => {
+export const FileUploader: FunctionComponent<FileUploadProps> = ({ label = '', onFileUpload }) => {
     const [file, setFile] = useState<File | null>(null);
     const [status, setStatus] = useState<UploadStatus>('idle');
 
@@ -88,7 +89,7 @@ export const FileUploader: FunctionComponent<FileUploadProps> = ({ onFileUpload 
         <>
             {status === 'idle' && (
                 <Container onClick={() => document.getElementById('file-input')?.click()}>
-                    <Paperclip size={24} /> Загрузить файл
+                    <Paperclip size={24} /> {label}
                     <input id="file-input" type="file" hidden onChange={handleFileChange} />
                 </Container>
             )}

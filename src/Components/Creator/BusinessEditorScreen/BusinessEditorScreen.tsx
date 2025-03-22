@@ -1,12 +1,16 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
-import { useBusinessEditorStore } from '@/Store/BusinessEditor';
-import { StepBusinessEditor } from '@/Enums';
-import { StepBusinessInfo } from '@/Components/Creator/BusinessEditorScreen/StepBusinessInfo';
-import { StepPaymentInfo } from '@/Components/Creator/BusinessEditorScreen/StepPaymentInfo';
-import { StepPersonalInfo } from '@/Components/Creator/BusinessEditorScreen/StepPersonalInfo';
-import { StepReceiveInfo } from '@/Components/Creator/BusinessEditorScreen/StepReceiveInfo';
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import {
+    StepBusinessInfo,
+    StepCatalogConstructor,
+    StepPaymentInfo,
+    StepPersonalInfo,
+    StepReceiveInfo,
+} from '@/Components/Creator/BusinessEditorScreen/Components';
+import { StepBusinessEditor } from '@/Enums';
+import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Container = styled.div`
     position: relative;
@@ -44,7 +48,8 @@ export const BusinessEditorScreen: FunctionComponent = () => {
                             [StepBusinessEditor.BUSINESS_INFO]: <StepBusinessInfo />,
                             [StepBusinessEditor.PAYMENT_INFO]: <StepPaymentInfo />,
                             [StepBusinessEditor.RECEIVE_INFO]: <StepReceiveInfo />,
-                        }[step]
+                            [StepBusinessEditor.CATALOG_CONSTRUCTOR]: <StepCatalogConstructor />,
+                        }['catalog_constructor']
                     }
                 </StepWrapper>
             </AnimatePresence>

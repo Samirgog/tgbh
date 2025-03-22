@@ -8,6 +8,7 @@ export enum StepBusinessEditor {
     BUSINESS_INFO = 'business_info',
     PAYMENT_INFO = 'payment_info',
     RECEIVE_INFO = 'receive_info',
+    CATALOG_CONSTRUCTOR = 'catalog_constructor'
 }
 
 export enum PaymentType {
