@@ -9,6 +9,7 @@ import {
     StepPersonalInfo,
     StepReceiveInfo,
 } from '@/Components/Creator/BusinessEditorScreen/Components';
+import { ConsumerThemeProvider } from '@/ConsumerThemeProvider';
 import { StepBusinessEditor } from '@/Enums';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
@@ -27,32 +28,35 @@ const StepWrapper = styled(motion.div)`
     display: flex;
     flex-direction: column;
     padding: 16px;
+    overflow-y: auto;
 `;
 
 export const BusinessEditorScreen: FunctionComponent = () => {
     const { step } = useBusinessEditorStore();
 
     return (
-        <Container>
-            <AnimatePresence mode="wait">
-                <StepWrapper
-                    key={step}
-                    initial={{ x: '100%', opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: '-100%', opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                >
-                    {
+        <ConsumerThemeProvider>
+            <Container>
+                <AnimatePresence mode="wait">
+                    <StepWrapper
+                        key={step}
+                        initial={{ x: '100%', opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '-100%', opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
                         {
-                            [StepBusinessEditor.PERSONAL_INFO]: <StepPersonalInfo />,
-                            [StepBusinessEditor.BUSINESS_INFO]: <StepBusinessInfo />,
-                            [StepBusinessEditor.PAYMENT_INFO]: <StepPaymentInfo />,
-                            [StepBusinessEditor.RECEIVE_INFO]: <StepReceiveInfo />,
-                            [StepBusinessEditor.CATALOG_CONSTRUCTOR]: <StepCatalogConstructor />,
-                        }['catalog_constructor']
-                    }
-                </StepWrapper>
-            </AnimatePresence>
-        </Container>
+                            {
+                                [StepBusinessEditor.PERSONAL_INFO]: <StepPersonalInfo />,
+                                [StepBusinessEditor.BUSINESS_INFO]: <StepBusinessInfo />,
+                                [StepBusinessEditor.PAYMENT_INFO]: <StepPaymentInfo />,
+                                [StepBusinessEditor.RECEIVE_INFO]: <StepReceiveInfo />,
+                                [StepBusinessEditor.CATALOG_CONSTRUCTOR]: <StepCatalogConstructor />,
+                            }['catalog_constructor']
+                        }
+                    </StepWrapper>
+                </AnimatePresence>
+            </Container>
+        </ConsumerThemeProvider>
     );
 };

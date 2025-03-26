@@ -1,11 +1,10 @@
-import { Pointer } from 'lucide-react';
-import React, { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
+import placeholderImage from '@/assets/placeholder_image.png';
 import { Button } from '@/Components/Button';
-import { CategoryImageStub } from '@/Components/Creator/BusinessEditorScreen/Components/CategoryImageStub';
 import { PreviewZone } from '@/Components/Creator/BusinessEditorScreen/Components/PreviewZone';
 import { CategoryChip } from '@/Components/Customizable/CategoryChip';
 import { Drawer } from '@/Components/Drawer';
@@ -41,7 +40,10 @@ const ButtonWrapper = styled.div`
 
 type CategoryForm = {
     name: string;
-    imageUrl: string;
+    image: {
+        url: string | null;
+        name: string;
+    };
 };
 
 type Props = {
@@ -52,10 +54,21 @@ type Props = {
 };
 
 export const DrawerCategoryChip: FunctionComponent<Props> = ({ open = false, onClose, onSave, category }) => {
-    const { control, handleSubmit } = useForm<CategoryForm>({
+    const { control, handleSubmit, watch, reset } = useForm<CategoryForm>({
         defaultValues: category,
     });
     const [selected, setSelected] = useState(false);
+
+    const name = watch('name');
+    const image = watch('image');
+
+    useEffect(() => {
+        if (category) {
+            reset(category);
+        } else {
+            reset({ name: '', image: undefined });
+        }
+    }, [category, reset]);
 
     const handleToggleSelected = () => {
         setSelected((prev) => !prev);
@@ -66,9 +79,8 @@ export const DrawerCategoryChip: FunctionComponent<Props> = ({ open = false, onC
             id: category?.id ?? uuid(),
             priority: category?.priority ?? 0,
             ...form,
-            imageUrl:
-                'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         });
+        // reset({ name: '', imageUrl: '' });
         onClose();
     };
 
@@ -77,23 +89,10 @@ export const DrawerCategoryChip: FunctionComponent<Props> = ({ open = false, onC
             <Container>
                 <Title size="h5">Превью карточки категории</Title>
                 <PreviewZone>
-                    <Controller
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <CategoryChip
-                                onClick={handleToggleSelected}
-                                selected={selected}
-                                style={{ minWidth: '108px' }}
-                            >
-                                <CategoryChip.Image
-                                    imageSrc={category?.imageUrl}
-                                    stub={!category?.imageUrl ? <CategoryImageStub /> : undefined}
-                                />
-                                <CategoryChip.Content>{value}</CategoryChip.Content>
-                            </CategoryChip>
-                        )}
-                        name="name"
-                    />
+                    <CategoryChip onClick={handleToggleSelected} selected={selected} style={{ minWidth: '108px' }}>
+                        <CategoryChip.Image imageSrc={image?.url || category?.image?.url || placeholderImage} />
+                        <CategoryChip.Content>{name || category?.name}</CategoryChip.Content>
+                    </CategoryChip>
                 </PreviewZone>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <FormInner>
@@ -106,8 +105,14 @@ export const DrawerCategoryChip: FunctionComponent<Props> = ({ open = false, onC
                         />
                         <Controller
                             control={control}
-                            name="imageUrl"
-                            render={() => <FileUploader label="Загрузить изображение" />}
+                            name="image"
+                            render={({ field: { value, onChange } }) => (
+                                <FileUploader
+                                    label="Загрузить изображение"
+                                    defaultImage={value}
+                                    onFileUpload={onChange}
+                                />
+                            )}
                         />
                     </FormInner>
                     <ButtonWrapper>

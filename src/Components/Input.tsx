@@ -1,4 +1,4 @@
-import { FunctionComponent, InputHTMLAttributes } from 'react';
+import { forwardRef, InputHTMLAttributes } from 'react';
 import styled, { css } from 'styled-components';
 
 import { Text } from '@/Components/Typography';
@@ -17,7 +17,6 @@ const StyledInput = styled.input<{ $invalid: boolean }>`
     border-radius: 12px;
     border: 1.8px solid ${({ theme }) => theme.colors.border};
     background: ${({ theme }) => theme.colors.input.background};
-    color: ${({ theme }) => theme.colors.textSecondary};
 
     &::placeholder {
         color: ${({ theme }) => theme.colors.placeholder};
@@ -40,11 +39,17 @@ type Props = {
     invalid?: boolean;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-export const Input: FunctionComponent<Props> = ({ label, invalid = false, ...attrs }) => {
+export const Input = forwardRef<HTMLInputElement, Props>(({ label, invalid = false, ...attrs }, ref) => {
     return (
         <InputContainer>
-            {label && <Text size="b1">{label}</Text>}
-            <StyledInput $invalid={invalid} {...attrs} />
+            {label && (
+                <Text size="b1" weight="medium">
+                    {label}
+                </Text>
+            )}
+            <StyledInput ref={ref} $invalid={invalid} {...attrs} />
         </InputContainer>
     );
-};
+});
+
+Input.displayName = 'Input';

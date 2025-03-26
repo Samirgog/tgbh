@@ -11,6 +11,7 @@ const DrawerOverlay = styled(motion.div)`
     height: 100%;
     display: flex;
     justify-content: flex-end;
+    z-index: 1500;
 `;
 const DrawerContent = styled(motion.div)`
     background: white;
@@ -27,6 +28,7 @@ const CloseButton = styled.button`
     border: none;
     background: transparent;
     cursor: pointer;
+    z-index: 1501;
 `;
 
 type Props = {

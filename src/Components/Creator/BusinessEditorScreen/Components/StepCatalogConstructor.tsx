@@ -1,16 +1,23 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
+import placeholderImage from '@/assets/placeholder_image.png';
+import { DrawerCatalogCard } from '@/Components/Creator/BusinessEditorScreen/Components/DrawerCatalogCard';
 import { DrawerCategoryChip } from '@/Components/Creator/BusinessEditorScreen/Components/DrawerCategoryChip';
+import { DrawerThemeSettings } from '@/Components/Creator/BusinessEditorScreen/Components/DrawerThemeSettings';
+import { Toolbar } from '@/Components/Creator/BusinessEditorScreen/Components/Toolbar';
 import { useControlCategory } from '@/Components/Creator/BusinessEditorScreen/Hooks';
+import { useControlProduct } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlProduct';
+import { useControlThemeSettings } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlThemeSettings';
 import { CatalogCard } from '@/Components/Customizable/CatalogCard';
 import { CategoryChip } from '@/Components/Customizable/CategoryChip';
 import { Title } from '@/Components/Typography';
-import { Category } from '@/Models/Catalog';
+import { useLongPress } from '@/Hooks/useLongPressElement';
+import { Category, Product } from '@/Models/Catalog';
+import { ConsumerTheme } from '@/Models/Theme';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
-
-import { CategoryImageStub } from './CategoryImageStub';
 
 const Container = styled.div`
     display: flex;
@@ -46,14 +53,22 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         catalog: { categories },
         addCategory,
         updateCategory,
+        addProductToCategory,
+        updateProduct,
+        updateTheme,
         setStep,
     } = useBusinessEditorStore(
-        useShallow(({ catalog, addCategory, updateCategory, setStep }) => ({
-            catalog,
-            addCategory,
-            updateCategory,
-            setStep,
-        })),
+        useShallow(
+            ({ catalog, addCategory, updateCategory, addProductToCategory, updateProduct, updateTheme, setStep }) => ({
+                catalog,
+                addCategory,
+                updateCategory,
+                addProductToCategory,
+                updateProduct,
+                updateTheme,
+                setStep,
+            }),
+        ),
     );
 
     const {
@@ -63,13 +78,45 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         closeCategoryDrawer,
     } = useControlCategory();
 
+    const {
+        isOpenDrawer: isOpenProductDrawer,
+        product,
+        categoryId: productCategoryId,
+        openProductDrawer,
+        closeProductDrawer,
+    } = useControlProduct();
+
+    const {
+        isOpenDrawer: isOpenThemeSettingsDrawer,
+        openThemeSettingsDrawer,
+        closeThemeSettingsDrawer,
+    } = useControlThemeSettings();
+
+    // const [isDragCategoriesAllowed, setDragCategoriesAllowed] = useState(false);
+    // const { getHandlersForLongPress: getHandlersCategoryLongPress } = useLongPress({
+    //     callback: () => setDragCategoriesAllowed(true),
+    //     duration: 300,
+    // });
+
     const handleClickAddCategory = () => {
         openCategoryDrawer();
+    };
+
+    const getHandleClickAddProduct = (categoryId: string) => {
+        return () => {
+            openProductDrawer(categoryId);
+        };
     };
 
     const getHandleClickEditCategory = (category: Category) => {
         return () => {
             openCategoryDrawer(category);
+        };
+    };
+
+    const getHandleClickEditProduct = (product: Product, categoryId: string) => {
+        return () => {
+            openProductDrawer(categoryId, product);
         };
     };
 
@@ -83,6 +130,24 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         updateCategory(nextCategory);
     };
 
+    const handleSaveProduct = (nextProduct: Product) => {
+        if (!product && productCategoryId) {
+            addProductToCategory({ categoryId: productCategoryId, product: nextProduct });
+
+            return;
+        }
+
+        updateProduct(nextProduct);
+    };
+
+    const handleSaveTheme = (theme: ConsumerTheme) => {
+        updateTheme(theme);
+    };
+
+    const handleDragEndCategory = (result: DropResult) => {
+        console.log(result);
+    };
+
     return (
         <>
             <DrawerCategoryChip
@@ -91,33 +156,73 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 onSave={handleSaveCategory}
                 category={category}
             />
+            <DrawerCatalogCard
+                open={isOpenProductDrawer}
+                onClose={closeProductDrawer}
+                onSave={handleSaveProduct}
+                product={product}
+            />
+            <DrawerThemeSettings
+                open={isOpenThemeSettingsDrawer}
+                onClose={closeThemeSettingsDrawer}
+                onSave={handleSaveTheme}
+            />
             <Container>
+                <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} />
                 <Section>
                     <Title size="h4" weight="bold">
                         Категории
                     </Title>
-                    <CategoriesFeed>
-                        {categories?.map((category) => (
-                            <CategoryChip key={category?.id} onClick={getHandleClickEditCategory(category)}>
-                                <CategoryChip.Image imageSrc={category?.imageUrl} />
-                                <CategoryChip.Content>{category?.name}</CategoryChip.Content>
-                            </CategoryChip>
-                        ))}
-                        <CategoryChip onClick={handleClickAddCategory}>
-                            <CategoryChip.Image stub={<CategoryImageStub />} />
-                            <CategoryChip.Content>Добавить</CategoryChip.Content>
-                        </CategoryChip>
-                    </CategoriesFeed>
+                    <DragDropContext onDragEnd={handleDragEndCategory}>
+                        <Droppable droppableId="categories" direction="horizontal">
+                            {(provided) => (
+                                <CategoriesFeed ref={provided.innerRef} {...provided.droppableProps}>
+                                    <CategoryChip onClick={handleClickAddCategory}>
+                                        <CategoryChip.Image imageSrc={placeholderImage} />
+                                        <CategoryChip.Content>Добавить</CategoryChip.Content>
+                                    </CategoryChip>
+                                    {categories?.map((category, index) => (
+                                        <Draggable
+                                            key={category.id}
+                                            draggableId={category.id}
+                                            index={index}
+                                            // isDragDisabled={!isDragCategoriesAllowed}
+                                        >
+                                            {(provided, snapshot) => (
+                                                <CategoryChip
+                                                    key={category?.id}
+                                                    onClick={getHandleClickEditCategory(category)}
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    // isDragging={snapshot.isDragging}
+                                                >
+                                                    <CategoryChip.Image imageSrc={category?.image?.url ?? ''} />
+                                                    <CategoryChip.Content>{category?.name}</CategoryChip.Content>
+                                                </CategoryChip>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                </CategoriesFeed>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </Section>
                 {categories?.map((category) => (
                     <Section key={category.id}>
                         <Title size="h5" weight="bold" style={{ color: '#ba1924' }}>
-                            {category?.name}
+                            {category.name}
                         </Title>
                         <ProductsGrid>
+                            <CatalogCard onClick={getHandleClickAddProduct(category.id)}>
+                                <CatalogCard.Image imageSrc={placeholderImage} />
+                                <CatalogCard.Content>
+                                    <CatalogCard.Content.Title>Добавить</CatalogCard.Content.Title>
+                                </CatalogCard.Content>
+                            </CatalogCard>
                             {category.products?.map((product) => (
-                                <CatalogCard key={product.id}>
-                                    <CatalogCard.Image imageSrc={product?.imageUrl} />
+                                <CatalogCard key={product.id} onClick={getHandleClickEditProduct(product, category.id)}>
+                                    <CatalogCard.Image imageSrc={product?.image?.url ?? ''} />
                                     <CatalogCard.Content>
                                         <CatalogCard.Content.Title>{product?.name}</CatalogCard.Content.Title>
                                         <CatalogCard.Content.Description>
@@ -130,12 +235,6 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                                     </CatalogCard.Content>
                                 </CatalogCard>
                             ))}
-                            <CatalogCard>
-                                <CatalogCard.Image stub={<CategoryImageStub />} />
-                                <CatalogCard.Content>
-                                    <CatalogCard.Content.Title>Добавить</CatalogCard.Content.Title>
-                                </CatalogCard.Content>
-                            </CatalogCard>
                         </ProductsGrid>
                     </Section>
                 ))}

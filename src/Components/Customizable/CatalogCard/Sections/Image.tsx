@@ -6,13 +6,13 @@ import { useURLResourceLoadControl } from '@/Hooks/useURLResourceLoadControl';
 const Container = styled.div`
     display: flex;
     width: 100%;
-    height: 192px;
+    height: 128px;
 
     img {
         width: 100%;
         aspect-ratio: 1 / 1;
-        object-fit: contain;
         object-position: center;
+        object-fit: contain;
         border-radius: 24px 24px 0 0;
     }
 `;

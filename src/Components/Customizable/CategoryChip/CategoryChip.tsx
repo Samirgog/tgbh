@@ -9,10 +9,13 @@ import React, {
 } from 'react';
 import styled, { css } from 'styled-components';
 
+import { useConsumerTheme } from '@/ConsumerThemeProvider';
+import { ConsumerTheme } from '@/Models/Theme';
+
 import { CategoryChipContext } from './CategoryChip.context';
 import { Content, Image } from './Sections';
 
-const Chip = styled.div<{ $selected: boolean }>`
+const Chip = styled.div<{ $selected: boolean; $theme?: ConsumerTheme }>`
     display: flex;
     align-items: center;
     gap: ${({ theme }) => theme.spacing(1)};
@@ -20,10 +23,11 @@ const Chip = styled.div<{ $selected: boolean }>`
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 9999px;
 
-    ${({ $selected }) =>
+    ${({ $selected, $theme }) =>
         $selected &&
         css`
-            background-color: ${({ theme }) => theme.colors.editor.categoryChip.backgroundColor};
+            background-color: ${({ theme }) =>
+                $theme?.colors.accent ?? theme.colors.editor.categoryChip.backgroundColor};
         `}
 `;
 
@@ -38,10 +42,11 @@ type CategoryChipComponent = {
 
 const ForwardedCategoryChip = forwardRef<HTMLDivElement, ChipProps>(({ selected = false, children, ...attrs }, ref) => {
     const context = useMemo(() => ({ selected }), [selected]);
+    const { theme } = useConsumerTheme();
 
     return (
         <CategoryChipContext.Provider value={context}>
-            <Chip $selected={selected} ref={ref} {...attrs}>
+            <Chip $selected={selected} $theme={theme} ref={ref} {...attrs}>
                 {children}
             </Chip>
         </CategoryChipContext.Provider>

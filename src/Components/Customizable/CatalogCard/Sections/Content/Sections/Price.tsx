@@ -1,6 +1,8 @@
 import { FunctionComponent, HTMLAttributes } from 'react';
-import { Title } from '@/Components/Typography';
 import styled from 'styled-components';
+
+import { Title } from '@/Components/Typography';
+import { useConsumerTheme } from '@/ConsumerThemeProvider';
 
 const Container = styled.div`
     display: flex;
@@ -15,13 +17,15 @@ type Props = {
 } & HTMLAttributes<HTMLDivElement>;
 
 export const Price: FunctionComponent<Props> = ({ currency, amount, ...attrs }) => {
+    const { theme } = useConsumerTheme();
+
     return (
         <Container {...attrs}>
-            <Title size="h4" weight="bold" style={{ color: '#f54748' }}>
-                {currency}
-            </Title>
             <Title size="h4" weight="bold">
                 {amount}
+            </Title>
+            <Title size="h4" weight="bold" style={{ color: theme.colors.accent }}>
+                {currency}
             </Title>
         </Container>
     );

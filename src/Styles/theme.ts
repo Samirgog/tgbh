@@ -21,7 +21,35 @@ export const theme = {
             categoryChip: {
                 backgroundColor: '#ba1924',
             },
+            placeholderImage: '/assets/placeholder_image.png',
         },
     },
     spacing: (factor: number) => `${factor * 8}px`,
+};
+
+export const consumerTheme = {
+    default: {
+        colors: {
+            background: '#fff',
+            accent: '#ba1924',
+            cardBackground: '#fcf0f4',
+            cardBorder: '#d8c2c0',
+        },
+    },
+    blue: {
+        colors: {
+            background: '#fff',
+            accent: '#aab99a',
+            cardBackground: '#D0DDD0',
+            cardBorder: '#F0F0D7',
+        },
+    },
+    green: {
+        colors: {
+            background: '#fff',
+            accent: '#3674b5',
+            cardBackground: '#a1e3f9',
+            cardBorder: '#d1f8ef',
+        },
+    },
 };

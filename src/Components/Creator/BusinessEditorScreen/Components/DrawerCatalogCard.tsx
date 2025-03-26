@@ -1,23 +1,29 @@
-import React, { FunctionComponent, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { PlusCircle, Trash } from 'lucide-react';
+import React, { FunctionComponent, useEffect } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
+import placeholderImage from '@/assets/placeholder_image.png';
 import { Button } from '@/Components/Button';
-import { CategoryImageStub } from '@/Components/Creator/BusinessEditorScreen/Components/CategoryImageStub';
+import { Checkbox } from '@/Components/Checkbox';
 import { PreviewZone } from '@/Components/Creator/BusinessEditorScreen/Components/PreviewZone';
-import { CategoryChip } from '@/Components/Customizable/CategoryChip';
+import { CatalogCard } from '@/Components/Customizable/CatalogCard';
 import { Drawer } from '@/Components/Drawer';
 import { FileUploader } from '@/Components/FileUploader';
 import { Input } from '@/Components/Input';
 import { Title } from '@/Components/Typography';
+import { RUBLE_SYMBOL } from '@/Consts';
 import { Product } from '@/Models/Catalog';
+
+const MAX_PARAMETERS_COUNT = 3;
 
 const Container = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing(3)};
     height: 100%;
+    overflow: auto;
 `;
 
 const Form = styled.form`
@@ -36,76 +42,209 @@ const FormInner = styled.div`
 const ButtonWrapper = styled.div`
     display: flex;
     align-self: center;
+    margin-top: ${({ theme }) => theme.spacing(3)};
+`;
+
+const InputWrapper = styled.div`
+    display: flex;
+    align-items: flex-end;
+    gap: ${({ theme }) => theme.spacing(1)};
+`;
+
+const CardWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+`;
+
+const ParamRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing(1)};
+`;
+
+const IconButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+`;
+
+const AddIcon = styled.div`
+    display: flex;
+    justify-content: flex-start;
 `;
 
 type ProductForm = {
     name: string;
     description: string;
-    amount: number;
-    currency: string;
-    imageUrl: string;
+    price: {
+        amount: number;
+    };
+    image: {
+        url: string | null;
+        name: string;
+    };
+    parameters: {
+        text: string;
+        price?: {
+            amount?: number;
+        };
+    }[];
+    addParameters: boolean;
 };
 
 type Props = {
     open: boolean;
     onClose: () => void;
-    onSave: (category: Product) => void;
+    onSave: (products: Product) => void;
     product?: Product;
 };
 
 export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onSave, product }) => {
-    const { control, handleSubmit } = useForm<CategoryForm>({
-        defaultValues: product,
+    const { control, handleSubmit, watch, reset } = useForm<ProductForm>({
+        defaultValues: { ...product, addParameters: Boolean(product?.parameters?.length) },
     });
 
-    const onSubmit = (form: CategoryForm) => {
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'parameters',
+    });
+
+    const name = watch('name');
+    const description = watch('description');
+    const amount = watch('price.amount');
+    const image = watch('image');
+    const addParameters = watch('addParameters');
+
+    useEffect(() => {
+        if (product) {
+            reset(product);
+        } else {
+            reset({ name: '', description: '', price: undefined, image: undefined, parameters: [] });
+        }
+    }, [product, reset]);
+
+    useEffect(() => {
+        if (!addParameters) {
+            remove();
+        }
+    }, [addParameters, remove]);
+
+    const onSubmit = (form: ProductForm) => {
         onSave({
-            id: category?.id ?? uuid(),
-            priority: category?.priority ?? 0,
             ...form,
-            imageUrl:
-                'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+            id: product?.id ?? uuid(),
+            price: {
+                currency: RUBLE_SYMBOL,
+                amount: form.price.amount,
+            },
+            parameters: form.parameters?.map((parameter) => ({
+                ...parameter,
+                price: { ...parameter.price, currency: RUBLE_SYMBOL },
+            })),
         });
+        reset();
         onClose();
     };
 
     return (
         <Drawer open={open} onClose={onClose}>
             <Container>
-                <Title size="h5">Превью карточки категории</Title>
+                <Title size="h5">Превью карточки товара</Title>
                 <PreviewZone>
-                    <Controller
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <CategoryChip
-                                onClick={handleToggleSelected}
-                                selected={selected}
-                                style={{ minWidth: '108px' }}
-                            >
-                                <CategoryChip.Image
-                                    imageSrc={category?.imageUrl}
-                                    stub={!category?.imageUrl ? <CategoryImageStub /> : undefined}
+                    <CardWrapper>
+                        <CatalogCard style={{ width: '168px' }}>
+                            <CatalogCard.Image imageSrc={image?.url || product?.image?.url || placeholderImage} />
+                            <CatalogCard.Content>
+                                <CatalogCard.Content.Title>{name || product?.name}</CatalogCard.Content.Title>
+                                <CatalogCard.Content.Description>
+                                    {description || product?.description}
+                                </CatalogCard.Content.Description>
+                                <CatalogCard.Content.Price
+                                    currency={amount ? RUBLE_SYMBOL : undefined}
+                                    amount={amount || product?.price?.amount}
                                 />
-                                <CategoryChip.Content>{value}</CategoryChip.Content>
-                            </CategoryChip>
-                        )}
-                        name="name"
-                    />
+                            </CatalogCard.Content>
+                        </CatalogCard>
+                    </CardWrapper>
                 </PreviewZone>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <FormInner>
                         <Controller
                             control={control}
-                            name="name"
-                            render={({ field }) => (
-                                <Input label="Название" placeholder="Введите название категории" {...field} />
+                            name="image"
+                            render={({ field: { value, onChange } }) => (
+                                <FileUploader
+                                    label="Загрузить изображение"
+                                    defaultImage={value}
+                                    onFileUpload={onChange}
+                                />
                             )}
                         />
                         <Controller
                             control={control}
-                            name="imageUrl"
-                            render={() => <FileUploader label="Загрузить изображение" />}
+                            name="name"
+                            render={({ field }) => (
+                                <Input label="Название" placeholder="Введите название товара" {...field} />
+                            )}
                         />
+                        <Controller
+                            control={control}
+                            name="description"
+                            render={({ field }) => (
+                                <Input label="Описание" placeholder="Введите описание товара" {...field} />
+                            )}
+                        />
+                        <InputWrapper>
+                            <Controller
+                                control={control}
+                                name="price.amount"
+                                render={({ field }) => (
+                                    <Input label="Стоимость" placeholder="Введите стоимость" {...field} />
+                                )}
+                            />
+                            <Title size="h2">{RUBLE_SYMBOL}</Title>
+                        </InputWrapper>
+                        <Controller
+                            name="addParameters"
+                            control={control}
+                            render={({ field }) => (
+                                <Checkbox
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    label="Дополнительные параметры товара"
+                                />
+                            )}
+                        />
+                        {addParameters &&
+                            fields.map((field, index) => (
+                                <ParamRow key={field.id}>
+                                    <Controller
+                                        name={`parameters.${index}.text`}
+                                        control={control}
+                                        render={({ field }) => <Input {...field} placeholder="Введите параметр" />}
+                                    />
+                                    <Controller
+                                        name={`parameters.${index}.price.amount`}
+                                        control={control}
+                                        render={({ field }) => <Input {...field} placeholder="Введите цену" />}
+                                    />
+                                    <IconButton type="button" onClick={() => remove(index)}>
+                                        <Trash size={20} color="red" />
+                                    </IconButton>
+                                </ParamRow>
+                            ))}
+                        {addParameters && fields.length < MAX_PARAMETERS_COUNT && (
+                            <AddIcon>
+                                <IconButton type="button" onClick={() => append({ text: '' })}>
+                                    <PlusCircle size={24} color="blue" />
+                                </IconButton>
+                            </AddIcon>
+                        )}
                     </FormInner>
                     <ButtonWrapper>
                         <Button type="submit">Сохранить</Button>

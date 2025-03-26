@@ -1,11 +1,12 @@
-import { Controller, useForm } from 'react-hook-form';
-import { useBusinessEditorStore } from '@/Store/BusinessEditor';
-import styled from 'styled-components';
-import { Input } from '@/Components/Input';
-import { Checkbox } from '@/Components/Checkbox';
-import { StepBusinessEditor } from '@/Enums';
-import { Button } from '@/Components/Button';
 import { FunctionComponent } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import styled from 'styled-components';
+
+import { Button } from '@/Components/Button';
+import { Checkbox } from '@/Components/Checkbox';
+import { Input } from '@/Components/Input';
+import { StepBusinessEditor } from '@/Enums';
+import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`
     display: flex;
@@ -119,9 +120,7 @@ export const StepPersonalInfo: FunctionComponent = () => {
                 </InputsWrapper>
             </FormInner>
             <ButtonWrapper>
-                <Button type="submit" disabled={!isValid}>
-                    Продолжить
-                </Button>
+                <Button type="submit">Продолжить</Button>
             </ButtonWrapper>
         </Form>
     );

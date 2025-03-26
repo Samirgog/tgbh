@@ -8,24 +8,23 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
+import { useConsumerTheme } from '@/ConsumerThemeProvider';
+import { ConsumerTheme } from '@/Models/Theme';
+
 import { Content, Image } from './Sections';
 
-const Card = styled.div`
+const Card = styled.div<{ $theme?: ConsumerTheme }>`
     border-radius: 24px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     text-align: center;
-    flex-shrink: 0;
     box-sizing: border-box;
     color: inherit;
     transition-duration: 0.1s;
     transition-property: transform, box-shadow;
-    width: 192px;
-    min-width: 0;
-    background: #fff;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    min-width: 148px;
+    background: ${({ $theme }) => $theme?.colors?.cardBackground ?? '#fcf0f4'};
+    border: 1px solid ${({ $theme }) => $theme?.colors?.cardBorder ?? '#d8c2c0'};
 `;
 
 type CardProps = HTMLAttributes<HTMLDivElement>;
@@ -35,8 +34,14 @@ type CatalogCardComponent = {
     Content: typeof Content;
 } & ForwardRefExoticComponent<PropsWithoutRef<PropsWithChildren<CardProps>> & RefAttributes<HTMLDivElement>>;
 
-const ForwardedCatalogCard = forwardRef<HTMLDivElement, CardProps>(({ children }, ref) => {
-    return <Card ref={ref}>{children}</Card>;
+const ForwardedCatalogCard = forwardRef<HTMLDivElement, CardProps>(({ children, ...attrs }, ref) => {
+    const { theme } = useConsumerTheme();
+
+    return (
+        <Card $theme={theme} ref={ref} {...attrs}>
+            {children}
+        </Card>
+    );
 });
 
 ForwardedCatalogCard.displayName = 'CatalogCard';

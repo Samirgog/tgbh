@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 import { StepBusinessEditor } from '@/Enums';
 import { Catalog, Category, Product } from '@/Models/Catalog';
+import { ConsumerTheme } from '@/Models/Theme';
+import { consumerTheme } from '@/Styles/theme';
 
 type PersonalInfo = {
     firstName: string;
@@ -33,6 +35,7 @@ type BusinessEditorStore = {
     paymentInfo: PaymentInfo;
     receiveInfo: ReceiveInfo;
     catalog: Catalog;
+    theme: ConsumerTheme;
 
     setStep: (step: StepBusinessEditor) => void;
 
@@ -48,6 +51,8 @@ type BusinessEditorStore = {
     addProductToCategory: (data: { categoryId: string; product: Product }) => void;
     removeProductFromCategory: (data: { categoryId: string; productId: string }) => void;
     updateProduct: (data: Partial<Product>) => void;
+
+    updateTheme: (data: Partial<ConsumerTheme>) => void;
 };
 
 export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
@@ -74,6 +79,7 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
     catalog: {
         categories: [],
     },
+    theme: consumerTheme.default,
 
     setStep: (step) => set({ step }),
     updatePersonalInfo: (data) => set((state) => ({ personalInfo: { ...state.personalInfo, ...data } })),
@@ -151,4 +157,6 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
                 }),
             },
         })),
+
+    updateTheme: (data) => set((state) => ({ theme: { ...state.theme, ...data } })),
 }));
