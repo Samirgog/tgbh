@@ -1,4 +1,6 @@
 import React from 'react';
+import { DndProvider } from 'react-dnd';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import { ThemeProvider } from 'styled-components';
 
 import { Creator } from '@/Components/Creator';
@@ -8,8 +10,10 @@ import { theme } from '@/Styles/theme';
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <GlobalStyles />
-            <Creator />
+            <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
+                <GlobalStyles />
+                <Creator />
+            </DndProvider>
         </ThemeProvider>
     );
 }

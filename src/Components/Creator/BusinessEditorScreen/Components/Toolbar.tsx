@@ -2,6 +2,8 @@ import { Eye, Palette, Save, Settings, X } from 'lucide-react';
 import { FunctionComponent, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+import { Text } from '@/Components/Typography';
+
 const fadeIn = keyframes`
     from { opacity: 0; transform: scale(0.8); }
     to { opacity: 1; transform: scale(1); }
@@ -16,7 +18,7 @@ const PanelContainer = styled.div<{ $isOpen: boolean; $position: 'left' | 'right
     position: fixed;
     top: 16px;
     ${({ $position }) => ($position === 'left' ? 'left: 16px;' : 'right: 16px;')}
-    z-index: 10;
+    z-index: 100;
 `;
 
 const Panel = styled.div<{ $isOpen: boolean; $position: 'left' | 'right' }>`
@@ -61,9 +63,6 @@ const ToolButton = styled.button`
     gap: 8px;
     padding: 12px;
     width: 100%;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
     background: #fff;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -79,6 +78,16 @@ const FadeInDiv = styled.div<{ $isVisible: boolean }>`
     animation: ${({ $isVisible }) => ($isVisible ? fadeIn : fadeOut)} 0.3s ease forwards;
 `;
 
+const Backdrop = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 99;
+`;
+
 type Props = {
     position?: 'left' | 'right';
     onSelectTheme?: () => void;
@@ -92,32 +101,45 @@ export const Toolbar: FunctionComponent<Props> = ({
     onSelectSave,
     onSelectPreview,
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setOpen] = useState(false);
+
+    const toggleOpen = () => {
+        setOpen((prev) => !prev);
+    };
 
     return (
-        <PanelContainer $isOpen={isOpen} $position={position}>
-            <Panel $isOpen={isOpen} $position={position}>
-                <IconButton onClick={() => setIsOpen(!isOpen)} $isOpen={isOpen}>
-                    {isOpen ? <X size={24} /> : <Settings size={24} />}
-                </IconButton>
+        <>
+            {isOpen && <Backdrop onClick={toggleOpen} />}
+            <PanelContainer $isOpen={isOpen} $position={position}>
+                <Panel $isOpen={isOpen} $position={position}>
+                    <IconButton onClick={toggleOpen} $isOpen={isOpen}>
+                        {isOpen ? <X size={24} /> : <Settings size={24} />}
+                    </IconButton>
 
-                {isOpen && (
-                    <FadeInDiv $isVisible={isOpen}>
-                        <ToolButton onClick={onSelectTheme}>
-                            <Palette size={20} color="#B91E23" />
-                            Настройка темы
-                        </ToolButton>
-                        <ToolButton onClick={onSelectPreview}>
-                            <Eye size={20} color="#B91E23" />
-                            Просмотр превью
-                        </ToolButton>
-                        <ToolButton onClick={onSelectSave}>
-                            <Save size={20} color="#B91E23" />
-                            Сохранить
-                        </ToolButton>
-                    </FadeInDiv>
-                )}
-            </Panel>
-        </PanelContainer>
+                    {isOpen && (
+                        <FadeInDiv $isVisible={isOpen}>
+                            <ToolButton onClick={onSelectTheme}>
+                                <Palette size={20} color="#B91E23" />
+                                <Text size="b1" weight="medium">
+                                    Настройка темы
+                                </Text>
+                            </ToolButton>
+                            <ToolButton onClick={onSelectPreview}>
+                                <Eye size={20} color="#B91E23" />
+                                <Text size="b1" weight="medium">
+                                    Просмотр превью
+                                </Text>
+                            </ToolButton>
+                            <ToolButton onClick={onSelectSave}>
+                                <Save size={20} color="green" />
+                                <Text size="b1" weight="medium">
+                                    Сохранить
+                                </Text>
+                            </ToolButton>
+                        </FadeInDiv>
+                    )}
+                </Panel>
+            </PanelContainer>
+        </>
     );
 };

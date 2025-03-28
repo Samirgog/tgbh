@@ -80,7 +80,7 @@ export const DrawerCategoryChip: FunctionComponent<Props> = ({ open = false, onC
             priority: category?.priority ?? 0,
             ...form,
         });
-        // reset({ name: '', imageUrl: '' });
+        reset({ name: '', image: undefined });
         onClose();
     };
 

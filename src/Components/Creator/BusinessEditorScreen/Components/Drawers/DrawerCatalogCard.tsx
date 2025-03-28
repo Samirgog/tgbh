@@ -147,7 +147,7 @@ export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onS
                 price: { ...parameter.price, currency: RUBLE_SYMBOL },
             })),
         });
-        reset();
+        reset({ name: '', description: '', price: undefined, image: undefined, parameters: [] });
         onClose();
     };
 
@@ -226,12 +226,12 @@ export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onS
                                     <Controller
                                         name={`parameters.${index}.text`}
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Введите параметр" />}
+                                        render={({ field }) => <Input {...field} placeholder="Параметр" />}
                                     />
                                     <Controller
                                         name={`parameters.${index}.price.amount`}
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Введите цену" />}
+                                        render={({ field }) => <Input {...field} placeholder="Цена" />}
                                     />
                                     <IconButton type="button" onClick={() => remove(index)}>
                                         <Trash size={20} color="red" />

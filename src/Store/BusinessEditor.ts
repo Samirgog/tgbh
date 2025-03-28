@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { create } from 'zustand';
 
 import { StepBusinessEditor } from '@/Enums';
@@ -44,6 +45,7 @@ type BusinessEditorStore = {
     updatePaymentInfo: (data: Partial<PaymentInfo>) => void;
     updateReceiveInfo: (data: Partial<ReceiveInfo>) => void;
 
+    updateCatalog: (catalog: Partial<Catalog>) => void;
     addCategory: (category: Category) => void;
     updateCategory: (data: Partial<Category>) => void;
     removeCategory: (id: string) => void;
@@ -87,6 +89,7 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
     updatePaymentInfo: (data) => set((state) => ({ paymentInfo: { ...state.paymentInfo, ...data } })),
     updateReceiveInfo: (data) => set((state) => ({ receiveInfo: { ...state.receiveInfo, ...data } })),
 
+    updateCatalog: (data) => set((state) => ({ catalog: { ...state.catalog, ...data } })),
     addCategory: (category) =>
         set((state) => ({ catalog: { ...state.catalog, categories: [...state.catalog.categories, category] } })),
     updateCategory: (data) =>

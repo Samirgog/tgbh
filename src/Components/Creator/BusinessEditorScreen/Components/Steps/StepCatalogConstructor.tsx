@@ -1,12 +1,9 @@
-import { FunctionComponent, useState } from 'react';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
 import placeholderImage from '@/assets/placeholder_image.png';
-import { DrawerCatalogCard } from '@/Components/Creator/BusinessEditorScreen/Components/DrawerCatalogCard';
-import { DrawerCategoryChip } from '@/Components/Creator/BusinessEditorScreen/Components/DrawerCategoryChip';
-import { DrawerThemeSettings } from '@/Components/Creator/BusinessEditorScreen/Components/DrawerThemeSettings';
+import { DroppableCategories } from '@/Components/Creator/BusinessEditorScreen/Components/DroppableCategories';
 import { Toolbar } from '@/Components/Creator/BusinessEditorScreen/Components/Toolbar';
 import { useControlCategory } from '@/Components/Creator/BusinessEditorScreen/Hooks';
 import { useControlProduct } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlProduct';
@@ -19,21 +16,12 @@ import { Category, Product } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
+import { DrawerCatalogCard, DrawerCategoryChip, DrawerThemeSettings } from '../Drawers';
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing(2)};
-`;
-
-const CategoriesFeed = styled.div`
-    display: flex;
-    overflow-x: auto;
-    gap: ${({ theme }) => theme.spacing(1)};
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
 `;
 
 const ProductsGrid = styled.div`
@@ -51,6 +39,7 @@ const Section = styled.section`
 export const StepCatalogConstructor: FunctionComponent = () => {
     const {
         catalog: { categories },
+        updateCatalog,
         addCategory,
         updateCategory,
         addProductToCategory,
@@ -59,8 +48,18 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         setStep,
     } = useBusinessEditorStore(
         useShallow(
-            ({ catalog, addCategory, updateCategory, addProductToCategory, updateProduct, updateTheme, setStep }) => ({
+            ({
                 catalog,
+                updateCatalog,
+                addCategory,
+                updateCategory,
+                addProductToCategory,
+                updateProduct,
+                updateTheme,
+                setStep,
+            }) => ({
+                catalog,
+                updateCatalog,
                 addCategory,
                 updateCategory,
                 addProductToCategory,
@@ -92,11 +91,18 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         closeThemeSettingsDrawer,
     } = useControlThemeSettings();
 
-    // const [isDragCategoriesAllowed, setDragCategoriesAllowed] = useState(false);
-    // const { getHandlersForLongPress: getHandlersCategoryLongPress } = useLongPress({
-    //     callback: () => setDragCategoriesAllowed(true),
-    //     duration: 300,
-    // });
+    const handleMoveCategories = (dragIndex: number, hoverIndex: number) => {
+        const updatedCategories = [...categories];
+        const [movedItem] = updatedCategories.splice(dragIndex, 1);
+        updatedCategories.splice(hoverIndex, 0, movedItem);
+
+        const reorderedCategories = updatedCategories.map((category, index) => ({
+            ...category,
+            priority: index + 1,
+        }));
+
+        updateCatalog({ categories: reorderedCategories });
+    };
 
     const handleClickAddCategory = () => {
         openCategoryDrawer();
@@ -105,12 +111,6 @@ export const StepCatalogConstructor: FunctionComponent = () => {
     const getHandleClickAddProduct = (categoryId: string) => {
         return () => {
             openProductDrawer(categoryId);
-        };
-    };
-
-    const getHandleClickEditCategory = (category: Category) => {
-        return () => {
-            openCategoryDrawer(category);
         };
     };
 
@@ -144,10 +144,6 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         updateTheme(theme);
     };
 
-    const handleDragEndCategory = (result: DropResult) => {
-        console.log(result);
-    };
-
     return (
         <>
             <DrawerCategoryChip
@@ -173,40 +169,12 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                     <Title size="h4" weight="bold">
                         Категории
                     </Title>
-                    <DragDropContext onDragEnd={handleDragEndCategory}>
-                        <Droppable droppableId="categories" direction="horizontal">
-                            {(provided) => (
-                                <CategoriesFeed ref={provided.innerRef} {...provided.droppableProps}>
-                                    <CategoryChip onClick={handleClickAddCategory}>
-                                        <CategoryChip.Image imageSrc={placeholderImage} />
-                                        <CategoryChip.Content>Добавить</CategoryChip.Content>
-                                    </CategoryChip>
-                                    {categories?.map((category, index) => (
-                                        <Draggable
-                                            key={category.id}
-                                            draggableId={category.id}
-                                            index={index}
-                                            // isDragDisabled={!isDragCategoriesAllowed}
-                                        >
-                                            {(provided, snapshot) => (
-                                                <CategoryChip
-                                                    key={category?.id}
-                                                    onClick={getHandleClickEditCategory(category)}
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    // isDragging={snapshot.isDragging}
-                                                >
-                                                    <CategoryChip.Image imageSrc={category?.image?.url ?? ''} />
-                                                    <CategoryChip.Content>{category?.name}</CategoryChip.Content>
-                                                </CategoryChip>
-                                            )}
-                                        </Draggable>
-                                    ))}
-                                </CategoriesFeed>
-                            )}
-                        </Droppable>
-                    </DragDropContext>
+                    <DroppableCategories
+                        categories={categories}
+                        moveCategory={handleMoveCategories}
+                        onClickAdd={handleClickAddCategory}
+                        onEdit={openCategoryDrawer}
+                    />
                 </Section>
                 {categories?.map((category) => (
                     <Section key={category.id}>
