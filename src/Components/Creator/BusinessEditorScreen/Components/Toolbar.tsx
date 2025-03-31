@@ -16,7 +16,7 @@ const fadeOut = keyframes`
 
 const PanelContainer = styled.div<{ $isOpen: boolean; $position: 'left' | 'right' }>`
     position: fixed;
-    top: 16px;
+    top: 8px;
     ${({ $position }) => ($position === 'left' ? 'left: 16px;' : 'right: 16px;')}
     z-index: 100;
 `;
@@ -133,7 +133,7 @@ export const Toolbar: FunctionComponent<Props> = ({
                             <ToolButton onClick={onSelectSave}>
                                 <Save size={20} color="green" />
                                 <Text size="b1" weight="medium">
-                                    Сохранить
+                                    Сохранить в черновики
                                 </Text>
                             </ToolButton>
                         </FadeInDiv>

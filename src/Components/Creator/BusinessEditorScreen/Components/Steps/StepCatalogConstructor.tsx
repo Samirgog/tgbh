@@ -1,42 +1,94 @@
+import { Plus } from 'lucide-react';
 import { FunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
-import placeholderImage from '@/assets/placeholder_image.png';
+import { Button } from '@/Components/Button';
+import { DndPreview } from '@/Components/Creator/BusinessEditorScreen/Components/DndPreview';
 import { DroppableCategories } from '@/Components/Creator/BusinessEditorScreen/Components/DroppableCategories';
+import { DroppableProducts } from '@/Components/Creator/BusinessEditorScreen/Components/DroppableProducts';
 import { Toolbar } from '@/Components/Creator/BusinessEditorScreen/Components/Toolbar';
 import { useControlCategory } from '@/Components/Creator/BusinessEditorScreen/Hooks';
 import { useControlProduct } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlProduct';
 import { useControlThemeSettings } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlThemeSettings';
-import { CatalogCard } from '@/Components/Customizable/CatalogCard';
-import { CategoryChip } from '@/Components/Customizable/CategoryChip';
 import { Title } from '@/Components/Typography';
-import { useLongPress } from '@/Hooks/useLongPressElement';
+import { RoutesCreator, StepBusinessEditor } from '@/Enums';
 import { Category, Product } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 import { DrawerCatalogCard, DrawerCategoryChip, DrawerThemeSettings } from '../Drawers';
 
+const Header = styled.div`
+    display: flex;
+    width: 100%;
+    height: 48px;
+    padding-bottom: 8px;
+`;
+
+const Body = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: ${({ theme }) => theme.spacing(2)};
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-top: 1px solid #ddd;
+    margin: 0 -16px;
+    padding: 16px 16px 0 16px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 -4px 16px;
+`;
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
+    height: 100%;
     gap: ${({ theme }) => theme.spacing(2)};
-`;
-
-const ProductsGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
 `;
 
 const Section = styled.section`
     display: flex;
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing(1.25)};
+    gap: ${({ theme }) => theme.spacing(2)};
+`;
+
+const SectionHeader = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const AddButton = styled.button`
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ba1924;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &:active {
+        transform: scale(0.95);
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+    }
 `;
 
 export const StepCatalogConstructor: FunctionComponent = () => {
+    const navigate = useNavigate();
+
     const {
         catalog: { categories },
         updateCatalog,
@@ -104,6 +156,29 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         updateCatalog({ categories: reorderedCategories });
     };
 
+    const handleMoveProduct = ({
+        dragIndex,
+        hoverIndex,
+        categoryId,
+    }: {
+        dragIndex: number;
+        hoverIndex: number;
+        categoryId: string;
+    }) => {
+        const products = categories.find((category) => category.id === categoryId)?.products;
+        const updatedProducts = [...(products ?? [])];
+        const [movedItem] = updatedProducts.splice(dragIndex, 1);
+
+        updatedProducts.splice(hoverIndex, 0, movedItem);
+
+        const reorderedProducts = updatedProducts.map((product, index) => ({
+            ...product,
+            priority: index + 1,
+        }));
+
+        updateCategory({ id: categoryId, products: reorderedProducts });
+    };
+
     const handleClickAddCategory = () => {
         openCategoryDrawer();
     };
@@ -114,8 +189,8 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         };
     };
 
-    const getHandleClickEditProduct = (product: Product, categoryId: string) => {
-        return () => {
+    const getHandleClickEditProduct = (categoryId: string) => {
+        return (product: Product) => {
             openProductDrawer(categoryId, product);
         };
     };
@@ -144,6 +219,11 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         updateTheme(theme);
     };
 
+    const handlePublish = () => {
+        setStep(StepBusinessEditor.PERSONAL_INFO);
+        navigate(RoutesCreator.MAIN);
+    };
+
     return (
         <>
             <DrawerCategoryChip
@@ -164,49 +244,47 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 onSave={handleSaveTheme}
             />
             <Container>
-                <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} />
-                <Section>
-                    <Title size="h4" weight="bold">
-                        Категории
-                    </Title>
-                    <DroppableCategories
-                        categories={categories}
-                        moveCategory={handleMoveCategories}
-                        onClickAdd={handleClickAddCategory}
-                        onEdit={openCategoryDrawer}
-                    />
-                </Section>
-                {categories?.map((category) => (
-                    <Section key={category.id}>
-                        <Title size="h5" weight="bold" style={{ color: '#ba1924' }}>
-                            {category.name}
-                        </Title>
-                        <ProductsGrid>
-                            <CatalogCard onClick={getHandleClickAddProduct(category.id)}>
-                                <CatalogCard.Image imageSrc={placeholderImage} />
-                                <CatalogCard.Content>
-                                    <CatalogCard.Content.Title>Добавить</CatalogCard.Content.Title>
-                                </CatalogCard.Content>
-                            </CatalogCard>
-                            {category.products?.map((product) => (
-                                <CatalogCard key={product.id} onClick={getHandleClickEditProduct(product, category.id)}>
-                                    <CatalogCard.Image imageSrc={product?.image?.url ?? ''} />
-                                    <CatalogCard.Content>
-                                        <CatalogCard.Content.Title>{product?.name}</CatalogCard.Content.Title>
-                                        <CatalogCard.Content.Description>
-                                            {product?.description}
-                                        </CatalogCard.Content.Description>
-                                        <CatalogCard.Content.Price
-                                            currency={product?.price?.currency}
-                                            amount={product?.price?.amount}
-                                        />
-                                    </CatalogCard.Content>
-                                </CatalogCard>
-                            ))}
-                        </ProductsGrid>
+                <Header>
+                    <Button onClick={handlePublish}>Опубликовать</Button>
+                    <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} />
+                </Header>
+                <Body>
+                    <Section>
+                        <SectionHeader>
+                            <Title size="h3" weight="semibold">
+                                Категории
+                            </Title>
+                            <AddButton onClick={handleClickAddCategory}>
+                                <Plus color="white" size={24} />
+                            </AddButton>
+                        </SectionHeader>
+                        <DroppableCategories
+                            categories={categories}
+                            moveCategory={handleMoveCategories}
+                            onEdit={openCategoryDrawer}
+                        />
                     </Section>
-                ))}
+                    {categories?.map((category) => (
+                        <Section key={category.id}>
+                            <SectionHeader>
+                                <Title size="h5" weight="bold" style={{ color: '#ba1924' }}>
+                                    {category.name}
+                                </Title>
+                                <AddButton onClick={getHandleClickAddProduct(category.id)}>
+                                    <Plus color="white" size={24} />
+                                </AddButton>
+                            </SectionHeader>
+                            <DroppableProducts
+                                products={category.products ?? []}
+                                categoryId={category.id}
+                                moveProduct={handleMoveProduct}
+                                onEdit={getHandleClickEditProduct(category.id)}
+                            />
+                        </Section>
+                    ))}
+                </Body>
             </Container>
+            <DndPreview />
         </>
     );
 };

@@ -3,20 +3,26 @@ import { useDrag } from 'react-dnd';
 import { v4 as uuid } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 
+import placeholderImage from '@/assets/placeholder_image.png';
 import { ContextMenu } from '@/Components/Creator/BusinessEditorScreen/Components/ContextMenu';
-import { CategoryChip } from '@/Components/Customizable/CategoryChip';
+import { CatalogCard } from '@/Components/Customizable/CatalogCard';
 import { DndType } from '@/Enums';
-import { Category } from '@/Models/Catalog';
+import { Product } from '@/Models/Catalog';
+import { DraggableProduct as DraggableProductType } from '@/Models/Dnd';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 type Props = {
-    category: Category;
-    onEdit: (category: Category) => void;
+    product: Product;
+    categoryId: string;
+    onEdit: (product: Product) => void;
 };
 
-export const DraggableCategory: FunctionComponent<Props> = ({ category, onEdit }) => {
-    const { removeCategory, addCategory } = useBusinessEditorStore(
-        useShallow(({ removeCategory, addCategory }) => ({ removeCategory, addCategory })),
+export const DraggableProduct: FunctionComponent<Props> = ({ product, categoryId, onEdit }) => {
+    const { removeProductFromCategory, addProductToCategory } = useBusinessEditorStore(
+        useShallow(({ removeProductFromCategory, addProductToCategory }) => ({
+            removeProductFromCategory,
+            addProductToCategory,
+        })),
     );
 
     const [isContextMenuOpen, setContextMenuOpen] = useState(false);
@@ -29,10 +35,15 @@ export const DraggableCategory: FunctionComponent<Props> = ({ category, onEdit }
 
     const holdTimer = useRef<NodeJS.Timeout | undefined>();
     const scaleInterval = useRef<NodeJS.Timeout | undefined>();
+    const cardRef = useRef<HTMLDivElement | null>(null);
 
     const [{ isDragging }, dragRef] = useDrag({
-        type: DndType.CATEGORY,
-        item: category,
+        type: DndType.PRODUCT,
+        item: (): DraggableProductType => {
+            const width = cardRef.current?.offsetWidth || 168;
+
+            return { ...product, width };
+        },
         collect: (monitor) => {
             if (monitor.isDragging()) {
                 setContextMenuOpen(false);
@@ -80,24 +91,27 @@ export const DraggableCategory: FunctionComponent<Props> = ({ category, onEdit }
     };
 
     const handleEdit = () => {
-        onEdit(category);
+        onEdit(product);
         setContextMenuOpen(false);
     };
 
     const handleRemove = () => {
-        removeCategory(category.id);
+        removeProductFromCategory({ categoryId, productId: product.id });
         setContextMenuOpen(false);
     };
 
     const handleDuplicate = () => {
-        addCategory({ ...category, id: uuid() });
+        addProductToCategory({ categoryId, product: { ...product, id: uuid() } });
         setContextMenuOpen(false);
     };
 
     return (
         <>
             <div
-                ref={dragRef}
+                ref={(node) => {
+                    dragRef(node);
+                    cardRef.current = node;
+                }}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 style={{
@@ -107,10 +121,14 @@ export const DraggableCategory: FunctionComponent<Props> = ({ category, onEdit }
                     ...(isDragging ? { opacity: 0 } : {}),
                 }}
             >
-                <CategoryChip key={category?.id}>
-                    <CategoryChip.Image imageSrc={category?.image?.url ?? ''} />
-                    <CategoryChip.Content style={{ whiteSpace: 'nowrap' }}>{category?.name}</CategoryChip.Content>
-                </CategoryChip>
+                <CatalogCard>
+                    <CatalogCard.Image imageSrc={product.image?.url ?? placeholderImage} />
+                    <CatalogCard.Content>
+                        <CatalogCard.Content.Title>{product.name}</CatalogCard.Content.Title>
+                        <CatalogCard.Content.Description>{product.description}</CatalogCard.Content.Description>
+                        <CatalogCard.Content.Price currency={product.price?.currency} amount={product.price?.amount} />
+                    </CatalogCard.Content>
+                </CatalogCard>
             </div>
             {isContextMenuOpen && (
                 <ContextMenu

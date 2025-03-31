@@ -157,7 +157,7 @@ export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onS
                 <Title size="h5">Превью карточки товара</Title>
                 <PreviewZone>
                     <CardWrapper>
-                        <CatalogCard style={{ width: '168px' }}>
+                        <CatalogCard style={{ width: '168px', flex: 'none' }}>
                             <CatalogCard.Image imageSrc={image?.url || product?.image?.url || placeholderImage} />
                             <CatalogCard.Content>
                                 <CatalogCard.Content.Title>{name || product?.name}</CatalogCard.Content.Title>

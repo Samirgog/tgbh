@@ -52,7 +52,7 @@ export const BusinessEditorScreen: FunctionComponent = () => {
                                 [StepBusinessEditor.PAYMENT_INFO]: <StepPaymentInfo />,
                                 [StepBusinessEditor.RECEIVE_INFO]: <StepReceiveInfo />,
                                 [StepBusinessEditor.CATALOG_CONSTRUCTOR]: <StepCatalogConstructor />,
-                            }['catalog_constructor']
+                            }[step]
                         }
                     </StepWrapper>
                 </AnimatePresence>

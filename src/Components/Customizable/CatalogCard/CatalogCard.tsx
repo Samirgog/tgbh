@@ -23,6 +23,7 @@ const Card = styled.div<{ $theme?: ConsumerTheme }>`
     transition-duration: 0.1s;
     transition-property: transform, box-shadow;
     min-width: 148px;
+    flex: 1 1 auto;
     background: ${({ $theme }) => $theme?.colors?.cardBackground ?? '#fcf0f4'};
     border: 1px solid ${({ $theme }) => $theme?.colors?.cardBorder ?? '#d8c2c0'};
 `;

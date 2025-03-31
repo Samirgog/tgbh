@@ -8,7 +8,7 @@ export enum StepBusinessEditor {
     BUSINESS_INFO = 'business_info',
     PAYMENT_INFO = 'payment_info',
     RECEIVE_INFO = 'receive_info',
-    CATALOG_CONSTRUCTOR = 'catalog_constructor'
+    CATALOG_CONSTRUCTOR = 'catalog_constructor',
 }
 
 export enum PaymentType {
@@ -25,4 +25,9 @@ export enum PaymentCondition {
 export enum ReceiveWays {
     PICKUP = 'pickup',
     DELIVERY = 'delivery',
+}
+
+export enum DndType {
+    CATEGORY = 'category',
+    PRODUCT = 'product',
 }

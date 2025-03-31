@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Text, Title } from '@/Components/Typography';
-import { useNavigate } from 'react-router-dom';
 import { RoutesCreator } from '@/Enums';
 
 const AddIcon = () => (

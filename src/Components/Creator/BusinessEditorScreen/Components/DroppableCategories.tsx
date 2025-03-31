@@ -1,12 +1,13 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import { Preview } from 'react-dnd-preview';
 import styled from 'styled-components';
 
-import placeholderImage from '@/assets/placeholder_image.png';
 import { DraggableCategory } from '@/Components/Creator/BusinessEditorScreen/Components/DraggableCategory';
-import { CategoryChip } from '@/Components/Customizable/CategoryChip';
+import { DndType } from '@/Enums';
 import { Category } from '@/Models/Catalog';
+
+const SCROLL_SPEED = 5;
+const SCROLL_THRESHOLD = 50;
 
 const CategoriesFeed = styled.div`
     display: flex;
@@ -24,18 +25,14 @@ const CategoriesFeed = styled.div`
 type Props = {
     categories: Category[];
     moveCategory: (fromIndex: number, toIndex: number) => void;
-    onClickAdd: () => void;
     onEdit: (category: Category) => void;
 };
 
-const scrollSpeed = 5; // Скорость прокрутки
-const scrollThreshold = 50; // Зона чувствительности (в пикселях)
-
-export const DroppableCategories: FunctionComponent<Props> = ({ categories, moveCategory, onClickAdd, onEdit }) => {
+export const DroppableCategories: FunctionComponent<Props> = ({ categories, moveCategory, onEdit }) => {
     const feedRef = useRef<HTMLDivElement | null>(null);
 
     const [, dropRef] = useDrop({
-        accept: 'category',
+        accept: DndType.CATEGORY,
         hover: (item: Category, monitor) => {
             if (!feedRef.current) return;
 
@@ -52,10 +49,10 @@ export const DroppableCategories: FunctionComponent<Props> = ({ categories, move
             const { x } = monitor.getClientOffset() || { x: 0 };
             const { left, right } = feedRef.current.getBoundingClientRect();
 
-            if (x - left < scrollThreshold) {
-                feedRef.current.scrollLeft -= scrollSpeed;
-            } else if (right - x < scrollThreshold) {
-                feedRef.current.scrollLeft += scrollSpeed;
+            if (x - left < SCROLL_THRESHOLD) {
+                feedRef.current.scrollLeft -= SCROLL_SPEED;
+            } else if (right - x < SCROLL_THRESHOLD) {
+                feedRef.current.scrollLeft += SCROLL_SPEED;
             }
         },
     });
@@ -65,24 +62,10 @@ export const DroppableCategories: FunctionComponent<Props> = ({ categories, move
     }, [dropRef]);
 
     return (
-        <>
-            <CategoriesFeed ref={feedRef}>
-                <CategoryChip onClick={onClickAdd}>
-                    <CategoryChip.Image imageSrc={placeholderImage} />
-                    <CategoryChip.Content>Добавить</CategoryChip.Content>
-                </CategoryChip>
-                {categories.map((category) => (
-                    <DraggableCategory key={category.id} category={category} onEdit={onEdit} />
-                ))}
-            </CategoriesFeed>
-            <Preview>
-                {({ item: category, style }) => (
-                    <CategoryChip key={(category as Category)?.id} style={style}>
-                        <CategoryChip.Image imageSrc={(category as Category)?.image?.url ?? ''} />
-                        <CategoryChip.Content>{(category as Category)?.name}</CategoryChip.Content>
-                    </CategoryChip>
-                )}
-            </Preview>
-        </>
+        <CategoriesFeed ref={feedRef}>
+            {categories.map((category) => (
+                <DraggableCategory key={category.id} category={category} onEdit={onEdit} />
+            ))}
+        </CategoriesFeed>
     );
 };
