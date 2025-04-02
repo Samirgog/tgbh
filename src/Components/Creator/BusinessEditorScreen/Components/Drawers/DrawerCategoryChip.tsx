@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
 import placeholderImage from '@/assets/placeholder_image.png';
-import { Button } from '@/Components/Button';
+import { Button } from '@/Components/@ui-kit/Button';
+import { Drawer } from '@/Components/@ui-kit/Drawer';
+import { FileUploader } from '@/Components/@ui-kit/FileUploader';
+import { Input } from '@/Components/@ui-kit/Input';
+import { Title } from '@/Components/@ui-kit/Typography';
 import { PreviewZone } from '@/Components/Creator/BusinessEditorScreen/Components/PreviewZone';
 import { CategoryChip } from '@/Components/Customizable/CategoryChip';
-import { Drawer } from '@/Components/Drawer';
-import { FileUploader } from '@/Components/FileUploader';
-import { Input } from '@/Components/Input';
-import { Title } from '@/Components/Typography';
 import { Category } from '@/Models/Catalog';
 
 const Container = styled.div`

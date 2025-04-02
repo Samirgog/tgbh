@@ -1,7 +1,8 @@
+import { Check } from 'lucide-react';
 import React, { Fragment, FunctionComponent, useState } from 'react';
 import styled from 'styled-components';
-import { Check } from 'lucide-react';
-import { Text } from '@/Components/Typography';
+
+import { Text } from '@/Components/@ui-kit/Typography';
 
 const Container = styled.div`
     display: flex;

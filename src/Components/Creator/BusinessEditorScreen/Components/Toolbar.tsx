@@ -2,7 +2,7 @@ import { Eye, Palette, Save, Settings, X } from 'lucide-react';
 import { FunctionComponent, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-import { Text } from '@/Components/Typography';
+import { Text } from '@/Components/@ui-kit/Typography';
 
 const fadeIn = keyframes`
     from { opacity: 0; transform: scale(0.8); }

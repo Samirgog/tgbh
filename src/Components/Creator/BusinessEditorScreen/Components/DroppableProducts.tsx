@@ -1,16 +1,10 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import styled from 'styled-components';
 
+import { ProductsGrid } from '@/Components/Common/ProductsGrid';
 import { DraggableProduct } from '@/Components/Creator/BusinessEditorScreen/Components/DraggableProduct';
 import { DndType } from '@/Enums';
 import { Product } from '@/Models/Catalog';
-
-const ProductsGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-`;
 
 type Props = {
     products: Product[];

@@ -1,7 +1,7 @@
 import { FunctionComponent, HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-import { Title } from '@/Components/Typography';
+import { Title } from '@/Components/@ui-kit/Typography';
 import { useConsumerTheme } from '@/ConsumerThemeProvider';
 
 const Container = styled.div`

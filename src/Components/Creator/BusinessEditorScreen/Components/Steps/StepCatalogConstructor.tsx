@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
-import { Button } from '@/Components/Button';
+import { Button } from '@/Components/@ui-kit/Button';
+import { Title } from '@/Components/@ui-kit/Typography';
+import { CatalogSection } from '@/Components/Common/CatalogSection';
 import { DndPreview } from '@/Components/Creator/BusinessEditorScreen/Components/DndPreview';
 import { DroppableCategories } from '@/Components/Creator/BusinessEditorScreen/Components/DroppableCategories';
 import { DroppableProducts } from '@/Components/Creator/BusinessEditorScreen/Components/DroppableProducts';
@@ -12,7 +14,6 @@ import { Toolbar } from '@/Components/Creator/BusinessEditorScreen/Components/To
 import { useControlCategory } from '@/Components/Creator/BusinessEditorScreen/Hooks';
 import { useControlProduct } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlProduct';
 import { useControlThemeSettings } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlThemeSettings';
-import { Title } from '@/Components/Typography';
 import { RoutesCreator, StepBusinessEditor } from '@/Enums';
 import { Category, Product } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
@@ -44,12 +45,6 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
-    gap: ${({ theme }) => theme.spacing(2)};
-`;
-
-const Section = styled.section`
-    display: flex;
-    flex-direction: column;
     gap: ${({ theme }) => theme.spacing(2)};
 `;
 
@@ -91,6 +86,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
 
     const {
         catalog: { categories },
+        mode,
         updateCatalog,
         addCategory,
         updateCategory,
@@ -102,6 +98,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         useShallow(
             ({
                 catalog,
+                mode,
                 updateCatalog,
                 addCategory,
                 updateCategory,
@@ -111,6 +108,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 setStep,
             }) => ({
                 catalog,
+                mode,
                 updateCatalog,
                 addCategory,
                 updateCategory,
@@ -224,6 +222,10 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         navigate(RoutesCreator.MAIN);
     };
 
+    const handleSave = () => {
+        navigate(-1);
+    };
+
     return (
         <>
             <DrawerCategoryChip
@@ -245,11 +247,13 @@ export const StepCatalogConstructor: FunctionComponent = () => {
             />
             <Container>
                 <Header>
-                    <Button onClick={handlePublish}>Опубликовать</Button>
+                    <Button onClick={mode === 'edit' ? handleSave : handlePublish} color="success">
+                        {mode === 'edit' ? 'Сохранить' : 'Опубликовать'}
+                    </Button>
                     <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} />
                 </Header>
                 <Body>
-                    <Section>
+                    <CatalogSection>
                         <SectionHeader>
                             <Title size="h3" weight="semibold">
                                 Категории
@@ -263,9 +267,9 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                             moveCategory={handleMoveCategories}
                             onEdit={openCategoryDrawer}
                         />
-                    </Section>
+                    </CatalogSection>
                     {categories?.map((category) => (
-                        <Section key={category.id}>
+                        <CatalogSection key={category.id}>
                             <SectionHeader>
                                 <Title size="h5" weight="bold" style={{ color: '#ba1924' }}>
                                     {category.name}
@@ -280,7 +284,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                                 moveProduct={handleMoveProduct}
                                 onEdit={getHandleClickEditProduct(category.id)}
                             />
-                        </Section>
+                        </CatalogSection>
                     ))}
                 </Body>
             </Container>

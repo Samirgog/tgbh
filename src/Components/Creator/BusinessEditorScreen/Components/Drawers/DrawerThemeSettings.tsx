@@ -2,12 +2,12 @@ import { FunctionComponent, useState } from 'react';
 import styled from 'styled-components';
 
 import pepperoni from '@/assets/pepperoni.png';
-import { Button } from '@/Components/Button';
+import { Button } from '@/Components/@ui-kit/Button';
+import { Drawer } from '@/Components/@ui-kit/Drawer';
+import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { PreviewZone } from '@/Components/Creator/BusinessEditorScreen/Components/PreviewZone';
 import { CatalogCard } from '@/Components/Customizable/CatalogCard';
 import { CategoryChip } from '@/Components/Customizable/CategoryChip';
-import { Drawer } from '@/Components/Drawer';
-import { Text, Title } from '@/Components/Typography';
 import { CONSUMER_THEMES, RUBLE_SYMBOL } from '@/Consts';
 import { useConsumerTheme } from '@/ConsumerThemeProvider';
 import { ConsumerTheme, ConsumerThemeSetting } from '@/Models/Theme';

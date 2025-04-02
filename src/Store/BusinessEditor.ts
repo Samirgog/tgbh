@@ -1,23 +1,15 @@
-import { useState } from 'react';
 import { create } from 'zustand';
 
 import { StepBusinessEditor } from '@/Enums';
+import { PersonalInfo } from '@/Models/Business';
 import { Catalog, Category, Product } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
 import { consumerTheme } from '@/Styles/theme';
 
-type PersonalInfo = {
-    firstName: string;
-    lastName: string;
-    middleName?: string;
-    email: string;
-    isCompanyOwner: boolean;
-    acceptedTerms: boolean;
-};
-
 type BusinessInfo = {
     name: string;
     description: string;
+    banner?: { url?: string; name?: string };
 };
 
 type PaymentInfo = {
@@ -30,6 +22,7 @@ type ReceiveInfo = {
 };
 
 type BusinessEditorStore = {
+    mode: 'add' | 'edit';
     step: StepBusinessEditor;
     personalInfo: PersonalInfo;
     businessInfo: BusinessInfo;
@@ -38,6 +31,7 @@ type BusinessEditorStore = {
     catalog: Catalog;
     theme: ConsumerTheme;
 
+    setMode: (mode: 'add' | 'edit') => void;
     setStep: (step: StepBusinessEditor) => void;
 
     updatePersonalInfo: (data: Partial<PersonalInfo>) => void;
@@ -58,6 +52,7 @@ type BusinessEditorStore = {
 };
 
 export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
+    mode: 'add',
     step: StepBusinessEditor.PERSONAL_INFO,
     personalInfo: {
         firstName: '',
@@ -70,6 +65,7 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
     businessInfo: {
         name: '',
         description: '',
+        banner: { url: '', name: '' },
     },
     paymentInfo: {
         types: [],
@@ -83,6 +79,7 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
     },
     theme: consumerTheme.default,
 
+    setMode: (mode) => set({ mode }),
     setStep: (step) => set({ step }),
     updatePersonalInfo: (data) => set((state) => ({ personalInfo: { ...state.personalInfo, ...data } })),
     updateBusinessInfo: (data) => set((state) => ({ businessInfo: { ...state.businessInfo, ...data } })),

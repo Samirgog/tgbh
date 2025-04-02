@@ -1,11 +1,12 @@
 import { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Button } from '@/Components/Button';
-import { FileUploader } from '@/Components/FileUploader';
-import { Input } from '@/Components/Input';
-import { Text } from '@/Components/Typography';
+import { Button } from '@/Components/@ui-kit/Button';
+import { FileUploader } from '@/Components/@ui-kit/FileUploader';
+import { Input } from '@/Components/@ui-kit/Input';
+import { Text } from '@/Components/@ui-kit/Typography';
 import { StepBusinessEditor } from '@/Enums';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
@@ -39,7 +40,8 @@ type BusinessInfoForm = {
 };
 
 export const StepBusinessInfo: FunctionComponent = () => {
-    const { businessInfo, updateBusinessInfo, setStep } = useBusinessEditorStore();
+    const navigate = useNavigate();
+    const { businessInfo, updateBusinessInfo, mode, setStep } = useBusinessEditorStore();
     const {
         control,
         handleSubmit,
@@ -51,6 +53,13 @@ export const StepBusinessInfo: FunctionComponent = () => {
 
     const onSubmit = (data: BusinessInfoForm) => {
         updateBusinessInfo(data);
+
+        if (mode === 'edit') {
+            navigate(-1);
+
+            return;
+        }
+
         setStep(StepBusinessEditor.PAYMENT_INFO);
     };
 
@@ -79,7 +88,7 @@ export const StepBusinessInfo: FunctionComponent = () => {
             </InputsWrapper>
             <ButtonWrapper>
                 <Button type="submit" disabled={!isValid}>
-                    Продолжить
+                    {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
                 </Button>
             </ButtonWrapper>
         </Form>

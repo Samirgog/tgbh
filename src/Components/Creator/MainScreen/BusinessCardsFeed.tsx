@@ -1,9 +1,10 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, HTMLAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Text, Title } from '@/Components/Typography';
-import { RoutesCreator } from '@/Enums';
+import { Text, Title } from '@/Components/@ui-kit/Typography';
+import { RoutesCreator, StepBusinessEditor } from '@/Enums';
+import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const AddIcon = () => (
     <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,11 +79,11 @@ type BusinessCardProps = {
     title?: string;
     subtitle?: string;
     description?: string;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
-const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, subtitle, description }) => {
+const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, subtitle, description, ...attrs }) => {
     return (
-        <CardContainer>
+        <CardContainer {...attrs}>
             <ImageContainer>
                 <img alt="" src={imageUrl} />
             </ImageContainer>
@@ -106,10 +107,18 @@ type BusinessCardsFeedProps = {
 };
 
 export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ businesses }) => {
+    const { setMode, setStep } = useBusinessEditorStore();
     const navigate = useNavigate();
 
     const handleClickAddCard = () => {
+        setMode('add');
+        setStep(StepBusinessEditor.PERSONAL_INFO);
         navigate(RoutesCreator.BUSINESS_EDITOR);
+    };
+
+    const handleClickCardManage = () => {
+        setMode('edit');
+        navigate(RoutesCreator.BUSINESS_MANAGEMENT);
     };
 
     return (
@@ -129,6 +138,7 @@ export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ b
                     title={name}
                     subtitle={organizationName}
                     description={description}
+                    onClick={handleClickCardManage}
                 />
             ))}
         </FeedContainer>

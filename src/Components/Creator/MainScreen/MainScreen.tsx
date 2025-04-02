@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import banner from '@/assets/banner-test.png';
 import logo from '@/assets/logo.png';
-import { Title } from '@/Components/Typography';
+import { Title } from '@/Components/@ui-kit/Typography';
 
 import { BusinessCardsFeed } from './BusinessCardsFeed';
 

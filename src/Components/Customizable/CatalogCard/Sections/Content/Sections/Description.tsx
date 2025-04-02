@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react';
-import { Text, TypographyProps } from '@/Components/Typography';
+
+import { Text, TypographyProps } from '@/Components/@ui-kit/Typography';
 
 export const Description: FunctionComponent<TypographyProps> = ({ children, ...attrs }) => {
     return (

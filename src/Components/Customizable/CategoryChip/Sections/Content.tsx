@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 
-import { Text, TypographyProps } from '@/Components/Typography';
+import { Text, TypographyProps } from '@/Components/@ui-kit/Typography';
 
 import { useCategoryChipContext } from '../CategoryChip.hooks';
 

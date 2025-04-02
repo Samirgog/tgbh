@@ -1,10 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Button } from '@/Components/Button';
-import { MultiSelect } from '@/Components/MultiSelect';
-import { Text, Title } from '@/Components/Typography';
+import { Button } from '@/Components/@ui-kit/Button';
+import { MultiSelect } from '@/Components/@ui-kit/MultiSelect';
+import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { ReceiveWays, StepBusinessEditor } from '@/Enums';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
@@ -48,7 +49,8 @@ const getReceiveWayValues = (types: string[]) => {
 };
 
 export const StepReceiveInfo: FunctionComponent = () => {
-    const { receiveInfo, updateReceiveInfo, setStep } = useBusinessEditorStore();
+    const navigate = useNavigate();
+    const { receiveInfo, updateReceiveInfo, mode, setStep } = useBusinessEditorStore();
 
     const {
         control,
@@ -60,6 +62,13 @@ export const StepReceiveInfo: FunctionComponent = () => {
 
     const onSubmit = (data: ReceiveInfoForm) => {
         updateReceiveInfo(data);
+
+        if (mode === 'edit') {
+            navigate(-1);
+
+            return;
+        }
+
         setStep(StepBusinessEditor.CATALOG_CONSTRUCTOR);
     };
 
@@ -88,7 +97,7 @@ export const StepReceiveInfo: FunctionComponent = () => {
             </Container>
             <ButtonWrapper>
                 <Button type="submit" disabled={!isValid}>
-                    Продолжить
+                    {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
                 </Button>
             </ButtonWrapper>
         </Form>

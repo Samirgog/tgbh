@@ -2,7 +2,7 @@ import { Loader2, Paperclip, RotateCcw, X } from 'lucide-react';
 import { ChangeEvent, FunctionComponent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import { Text } from '@/Components/Typography';
+import { Text } from '@/Components/@ui-kit/Typography';
 
 const Container = styled.div`
     display: flex;

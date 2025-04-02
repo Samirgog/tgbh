@@ -1,6 +1,8 @@
 export enum RoutesCreator {
     MAIN = '/',
     BUSINESS_EDITOR = '/business-editor',
+    BUSINESS_MANAGEMENT = '/business-management',
+    BUSINESS_PREVIEW = '/business-preview',
 }
 
 export enum StepBusinessEditor {

@@ -1,7 +1,7 @@
 import { forwardRef, InputHTMLAttributes } from 'react';
 import styled, { css } from 'styled-components';
 
-import { Text } from '@/Components/Typography';
+import { Text } from '@/Components/@ui-kit/Typography';
 
 const InputContainer = styled.div`
     display: flex;

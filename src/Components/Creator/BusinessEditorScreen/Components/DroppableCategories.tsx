@@ -1,26 +1,13 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import styled from 'styled-components';
 
+import { CategoriesFeed } from '@/Components/Common/CategoriesFeed';
 import { DraggableCategory } from '@/Components/Creator/BusinessEditorScreen/Components/DraggableCategory';
 import { DndType } from '@/Enums';
 import { Category } from '@/Models/Catalog';
 
 const SCROLL_SPEED = 5;
 const SCROLL_THRESHOLD = 50;
-
-const CategoriesFeed = styled.div`
-    display: flex;
-    overflow-x: auto;
-    gap: ${({ theme }) => theme.spacing(1)};
-    scrollbar-width: none;
-    padding: 6px;
-    margin: -6px;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
-`;
 
 type Props = {
     categories: Category[];

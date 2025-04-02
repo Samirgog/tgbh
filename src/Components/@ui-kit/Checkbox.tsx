@@ -1,6 +1,7 @@
-import styled from 'styled-components';
 import { FunctionComponent } from 'react';
-import { Text } from '@/Components/Typography';
+import styled from 'styled-components';
+
+import { Text } from '@/Components/@ui-kit/Typography';
 
 const CheckboxContainer = styled.label`
     display: flex;

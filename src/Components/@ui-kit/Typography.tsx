@@ -28,6 +28,7 @@ const colors = {
     general: '#000',
     secondary: 'rgba(128, 128, 128, 0.55)',
     accent: '#007BFF',
+    white: '#fff',
 } as const;
 
 export type TypographyProps = {

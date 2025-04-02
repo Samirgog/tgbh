@@ -1,11 +1,13 @@
-import styled from 'styled-components';
 import { FunctionComponent } from 'react';
-import { useBusinessEditorStore } from '@/Store/BusinessEditor';
-import { Text, Title } from '@/Components/Typography';
-import { MultiSelect } from '@/Components/MultiSelect';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { Button } from '@/Components/@ui-kit/Button';
+import { MultiSelect } from '@/Components/@ui-kit/MultiSelect';
+import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { PaymentCondition, PaymentType, StepBusinessEditor } from '@/Enums';
-import { Button } from '@/Components/Button';
+import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`
     display: flex;
@@ -65,7 +67,8 @@ const getPaymentConditionValues = (types: string[]) => {
 };
 
 export const StepPaymentInfo: FunctionComponent = () => {
-    const { paymentInfo, updatePaymentInfo, setStep } = useBusinessEditorStore();
+    const navigate = useNavigate();
+    const { paymentInfo, updatePaymentInfo, mode, setStep } = useBusinessEditorStore();
 
     const {
         control,
@@ -77,6 +80,13 @@ export const StepPaymentInfo: FunctionComponent = () => {
 
     const onSubmit = (data: PaymentInfoForm) => {
         updatePaymentInfo(data);
+
+        if (mode === 'edit') {
+            navigate(-1);
+
+            return;
+        }
+
         setStep(StepBusinessEditor.RECEIVE_INFO);
     };
 
@@ -128,7 +138,7 @@ export const StepPaymentInfo: FunctionComponent = () => {
             </FormInner>
             <ButtonWrapper>
                 <Button type="submit" disabled={!isValid}>
-                    Продолжить
+                    {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
                 </Button>
             </ButtonWrapper>
         </Form>

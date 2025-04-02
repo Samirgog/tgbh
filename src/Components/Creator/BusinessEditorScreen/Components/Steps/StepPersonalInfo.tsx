@@ -2,9 +2,9 @@ import { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import { Button } from '@/Components/Button';
-import { Checkbox } from '@/Components/Checkbox';
-import { Input } from '@/Components/Input';
+import { Button } from '@/Components/@ui-kit/Button';
+import { Checkbox } from '@/Components/@ui-kit/Checkbox';
+import { Input } from '@/Components/@ui-kit/Input';
 import { StepBusinessEditor } from '@/Enums';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 

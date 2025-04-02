@@ -5,14 +5,14 @@ import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
 import placeholderImage from '@/assets/placeholder_image.png';
-import { Button } from '@/Components/Button';
-import { Checkbox } from '@/Components/Checkbox';
+import { Button } from '@/Components/@ui-kit/Button';
+import { Checkbox } from '@/Components/@ui-kit/Checkbox';
+import { Drawer } from '@/Components/@ui-kit/Drawer';
+import { FileUploader } from '@/Components/@ui-kit/FileUploader';
+import { Input } from '@/Components/@ui-kit/Input';
+import { Title } from '@/Components/@ui-kit/Typography';
 import { PreviewZone } from '@/Components/Creator/BusinessEditorScreen/Components/PreviewZone';
 import { CatalogCard } from '@/Components/Customizable/CatalogCard';
-import { Drawer } from '@/Components/Drawer';
-import { FileUploader } from '@/Components/FileUploader';
-import { Input } from '@/Components/Input';
-import { Title } from '@/Components/Typography';
 import { RUBLE_SYMBOL } from '@/Consts';
 import { Product } from '@/Models/Catalog';
 

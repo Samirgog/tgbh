@@ -2,7 +2,7 @@ import { Copy, Edit, Trash } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
-import { Text } from '@/Components/Typography';
+import { Text } from '@/Components/@ui-kit/Typography';
 
 const MenuWrapper = styled.div<{ top: number; left: number; align: 'left' | 'right' }>`
     position: fixed;
