@@ -13,10 +13,20 @@ const ConsumerThemeContext = createContext<ConsumerThemeContextProps>({
     theme: consumerTheme.default,
 });
 
-export const ConsumerThemeProvider = ({ children }: { children: ReactNode }) => {
-    const [theme, setTheme] = useState(consumerTheme.default);
+export const ConsumerThemeProvider = ({
+    children,
+    theme = consumerTheme.default,
+}: {
+    children: ReactNode;
+    theme?: ConsumerTheme;
+}) => {
+    const [currentTheme, setTheme] = useState(theme);
 
-    return <ConsumerThemeContext.Provider value={{ theme, setTheme }}>{children}</ConsumerThemeContext.Provider>;
+    return (
+        <ConsumerThemeContext.Provider value={{ theme: currentTheme, setTheme }}>
+            {children}
+        </ConsumerThemeContext.Provider>
+    );
 };
 
 export const useConsumerTheme = () => useContext(ConsumerThemeContext);

@@ -31,13 +31,13 @@ const Header = styled.div`
 const Body = styled.div`
     display: flex;
     flex-direction: column;
-    height: 100%;
+    //height: 100%;
     gap: ${({ theme }) => theme.spacing(2)};
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
     border-top: 1px solid #ddd;
     margin: 0 -16px;
-    padding: 16px 16px 0 16px;
+    padding: 16px;
     box-shadow: rgba(0, 0, 0, 0.1) 0 -4px 16px;
 `;
 
@@ -85,8 +85,10 @@ export const StepCatalogConstructor: FunctionComponent = () => {
     const navigate = useNavigate();
 
     const {
-        catalog: { categories },
+        catalog,
+        businessInfo,
         mode,
+        theme,
         updateCatalog,
         addCategory,
         updateCategory,
@@ -98,7 +100,9 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         useShallow(
             ({
                 catalog,
+                businessInfo,
                 mode,
+                theme,
                 updateCatalog,
                 addCategory,
                 updateCategory,
@@ -108,7 +112,9 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 setStep,
             }) => ({
                 catalog,
+                businessInfo,
                 mode,
+                theme,
                 updateCatalog,
                 addCategory,
                 updateCategory,
@@ -119,6 +125,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
             }),
         ),
     );
+    const { categories } = catalog ?? {};
 
     const {
         isOpenDrawer: isOpenCategoryDrawer,
@@ -217,6 +224,14 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         updateTheme(theme);
     };
 
+    const handlePreview = () => {
+        navigate(RoutesCreator.BUSINESS_PREVIEW, {
+            state: {
+                business: { ...businessInfo, store: { catalog, theme } },
+            },
+        });
+    };
+
     const handlePublish = () => {
         setStep(StepBusinessEditor.PERSONAL_INFO);
         navigate(RoutesCreator.MAIN);
@@ -250,7 +265,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                     <Button onClick={mode === 'edit' ? handleSave : handlePublish} color="success">
                         {mode === 'edit' ? 'Сохранить' : 'Опубликовать'}
                     </Button>
-                    <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} />
+                    <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} onSelectPreview={handlePreview} />
                 </Header>
                 <Body>
                     <CatalogSection>
@@ -271,7 +286,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                     {categories?.map((category) => (
                         <CatalogSection key={category.id}>
                             <SectionHeader>
-                                <Title size="h5" weight="bold" style={{ color: '#ba1924' }}>
+                                <Title size="h5" weight="bold" color="accent">
                                     {category.name}
                                 </Title>
                                 <AddButton onClick={getHandleClickAddProduct(category.id)}>

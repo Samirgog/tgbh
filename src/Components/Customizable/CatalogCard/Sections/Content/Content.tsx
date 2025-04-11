@@ -1,6 +1,7 @@
 import { FunctionComponent, HTMLAttributes } from 'react';
-import { Title, Description, Price } from './Sections';
 import styled from 'styled-components';
+
+import { Description, Price, Title } from './Sections';
 
 type ContentComponent = {
     Title: typeof Title;
@@ -14,6 +15,7 @@ const Container = styled.div`
     align-items: center;
     gap: ${({ theme }) => theme.spacing(1)};
     padding: 16px;
+    height: 100%;
 `;
 
 export const Content: ContentComponent = ({ children }) => {

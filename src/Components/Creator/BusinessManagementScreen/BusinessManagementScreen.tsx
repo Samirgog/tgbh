@@ -68,9 +68,9 @@ const ProItem = styled.div`
     font-weight: 600;
     animation: ${gradientAnimation} 3s infinite linear;
     box-shadow: 0px 4px 12px rgba(255, 107, 107, 0.4);
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
     border-top: none;
-    margin-top: 8px;
+    margin: 8px -16px -16px;
 
     &:hover {
         filter: brightness(1.1);
@@ -83,14 +83,40 @@ const ProItem = styled.div`
 `;
 
 export const BusinessManagementScreen: FunctionComponent = () => {
-    const { updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo, setStep } = useBusinessEditorStore(
-        useShallow(({ updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo, setStep }) => ({
-            updateBusinessInfo,
-            updateCatalog,
-            updateReceiveInfo,
-            updatePaymentInfo,
-            setStep,
-        })),
+    const {
+        catalog,
+        businessInfo,
+        theme,
+        updateBusinessInfo,
+        updateCatalog,
+        updateReceiveInfo,
+        updatePaymentInfo,
+        updateTheme,
+        setStep,
+    } = useBusinessEditorStore(
+        useShallow(
+            ({
+                catalog,
+                businessInfo,
+                theme,
+                updateBusinessInfo,
+                updateCatalog,
+                updateReceiveInfo,
+                updatePaymentInfo,
+                updateTheme,
+                setStep,
+            }) => ({
+                catalog,
+                businessInfo,
+                theme,
+                updateBusinessInfo,
+                updateCatalog,
+                updateReceiveInfo,
+                updatePaymentInfo,
+                updateTheme,
+                setStep,
+            }),
+        ),
     );
     const navigate = useNavigate();
 
@@ -103,10 +129,15 @@ export const BusinessManagementScreen: FunctionComponent = () => {
         updateCatalog(mockBusiness.store.catalog);
         updateReceiveInfo(mockBusiness.store.receiveInfo);
         updatePaymentInfo(mockBusiness.store.payment);
-    }, [updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo]);
+        updateTheme(mockBusiness.store.theme);
+    }, [updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo, updateTheme]);
 
     const handleClickPreview = () => {
-        navigate(RoutesCreator.BUSINESS_PREVIEW);
+        navigate(RoutesCreator.BUSINESS_PREVIEW, {
+            state: {
+                business: { ...businessInfo, store: { catalog, theme } },
+            },
+        });
     };
 
     const handleEditBusinessInfo = () => {

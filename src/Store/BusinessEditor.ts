@@ -49,9 +49,28 @@ type BusinessEditorStore = {
     updateProduct: (data: Partial<Product>) => void;
 
     updateTheme: (data: Partial<ConsumerTheme>) => void;
+
+    resetStore: () => void;
 };
 
-export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
+const initialState: Omit<
+    BusinessEditorStore,
+    | 'setMode'
+    | 'setStep'
+    | 'updatePersonalInfo'
+    | 'updateBusinessInfo'
+    | 'updatePaymentInfo'
+    | 'updateReceiveInfo'
+    | 'updateCatalog'
+    | 'addCategory'
+    | 'updateCategory'
+    | 'removeCategory'
+    | 'addProductToCategory'
+    | 'removeProductFromCategory'
+    | 'updateProduct'
+    | 'updateTheme'
+    | 'resetStore'
+> = {
     mode: 'add',
     step: StepBusinessEditor.PERSONAL_INFO,
     personalInfo: {
@@ -78,6 +97,10 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
         categories: [],
     },
     theme: consumerTheme.default,
+};
+
+export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
+    ...initialState,
 
     setMode: (mode) => set({ mode }),
     setStep: (step) => set({ step }),
@@ -93,13 +116,9 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
         set((state) => ({
             catalog: {
                 ...state.catalog,
-                categories: state.catalog.categories.map((category) => {
-                    if (category.id === data.id) {
-                        return { ...category, ...data };
-                    }
-
-                    return category;
-                }),
+                categories: state.catalog.categories.map((category) =>
+                    category.id === data.id ? { ...category, ...data } : category,
+                ),
             },
         })),
     removeCategory: (id) =>
@@ -114,49 +133,38 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
         set((state) => ({
             catalog: {
                 ...state.catalog,
-                categories: state.catalog.categories.map((category) => {
-                    if (category.id === categoryId) {
-                        return { ...category, products: [...(category.products ?? []), product] };
-                    }
-
-                    return category;
-                }),
+                categories: state.catalog.categories.map((category) =>
+                    category.id === categoryId
+                        ? { ...category, products: [...(category.products ?? []), product] }
+                        : category,
+                ),
             },
         })),
     removeProductFromCategory: ({ categoryId, productId }) =>
         set((state) => ({
             catalog: {
                 ...state.catalog,
-                categories: state.catalog.categories.map((category) => {
-                    if (category.id === categoryId) {
-                        return {
-                            ...category,
-                            products: category.products?.filter((product) => product.id !== productId),
-                        };
-                    }
-
-                    return category;
-                }),
+                categories: state.catalog.categories.map((category) =>
+                    category.id === categoryId
+                        ? { ...category, products: category.products?.filter((product) => product.id !== productId) }
+                        : category,
+                ),
             },
         })),
     updateProduct: (data) =>
         set((state) => ({
             catalog: {
                 ...state.catalog,
-                categories: state.catalog.categories.map((category) => {
-                    return {
-                        ...category,
-                        products: category.products?.map((product) => {
-                            if (product.id === data.id) {
-                                return { ...product, ...data };
-                            }
-
-                            return product;
-                        }),
-                    };
-                }),
+                categories: state.catalog.categories.map((category) => ({
+                    ...category,
+                    products: category.products?.map((product) =>
+                        product.id === data.id ? { ...product, ...data } : product,
+                    ),
+                })),
             },
         })),
 
     updateTheme: (data) => set((state) => ({ theme: { ...state.theme, ...data } })),
+
+    resetStore: () => set(initialState),
 }));

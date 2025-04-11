@@ -1,6 +1,7 @@
 export enum RoutesCreator {
     MAIN = '/',
     BUSINESS_EDITOR = '/business-editor',
+    CATALOG_PREVIEW = '/catalog-preview',
     BUSINESS_MANAGEMENT = '/business-management',
     BUSINESS_PREVIEW = '/business-preview',
 }

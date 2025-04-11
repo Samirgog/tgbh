@@ -32,10 +32,10 @@ const StepWrapper = styled(motion.div)`
 `;
 
 export const BusinessEditorScreen: FunctionComponent = () => {
-    const { step } = useBusinessEditorStore();
+    const { step, theme } = useBusinessEditorStore();
 
     return (
-        <ConsumerThemeProvider>
+        <ConsumerThemeProvider theme={theme}>
             <Container>
                 <AnimatePresence mode="wait">
                     <StepWrapper

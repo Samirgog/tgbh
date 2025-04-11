@@ -1,5 +1,6 @@
 import { ShoppingCart } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { mockBusiness } from '@/__mock__/business';
@@ -10,6 +11,8 @@ import { CategoriesFeed } from '@/Components/Common/CategoriesFeed';
 import { ProductsGrid } from '@/Components/Common/ProductsGrid';
 import { CatalogCard } from '@/Components/Customizable/CatalogCard';
 import { CategoryChip } from '@/Components/Customizable/CategoryChip';
+import { ConsumerThemeProvider } from '@/ConsumerThemeProvider';
+import { Business } from '@/Models/Business';
 import { Product } from '@/Models/Catalog';
 
 const StoreCatalogWrapper = styled.div`
@@ -35,52 +38,81 @@ const Banner = styled.div<{ imageUrl: string }>`
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 40%;
-        background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        height: 65%;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 7), rgba(0, 0, 0, 1));
     }
 `;
 
 const StoreInfo = styled.div`
+    display: flex;
+    flex-direction: column;
     position: relative;
     color: white;
     z-index: 1;
+    bottom: 50px;
+    gap: ${({ theme }) => theme.spacing(0.5)};
 `;
 
 const CatalogWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
     position: relative;
     z-index: 2;
     background: white;
-    border-radius: 16px 16px 0 0;
-    padding: 16px;
-    margin-top: -10vh;
+    margin-top: -50px;
     transition: transform 0.3s ease-in-out;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 16px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 -4px 16px;
+    gap: ${({ theme }) => theme.spacing(2)};
 `;
 
 const CategoriesHeader = styled.div<{ $isSticky: boolean }>`
     position: ${({ $isSticky }) => ($isSticky ? 'fixed' : 'relative')};
     top: ${({ $isSticky }) => ($isSticky ? '0' : 'auto')};
+    padding: ${({ $isSticky }) => ($isSticky ? '16px' : '0')};
     left: 0;
     width: 100%;
     background: white;
-    padding: 12px 16px;
     z-index: 3;
-    box-shadow: ${({ $isSticky }) => ($isSticky ? '0 4px 6px rgba(0, 0, 0, 0.1)' : 'none')};
-    transition: box-shadow 0.2s ease-in-out;
 `;
 
-export const StoreCatalog = () => {
-    const { store: { catalog: { categories = [] } = {} } = {} } = mockBusiness ?? {};
-    const [scrollY, setScrollY] = useState(0);
+const HeaderBlock = styled.div`
+    display: flex;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    width: fit-content;
+`;
+
+type Props = {
+    mode?: 'preview' | 'full';
+};
+
+export const StoreCatalog: FunctionComponent<Props> = ({ mode = 'full' }) => {
+    const location = useLocation();
+    const business = location.state?.business as Business;
+    const {
+        name,
+        banner,
+        description,
+        store: { catalog: { categories = [] } = {}, theme } = {},
+    } = business ?? mockBusiness;
+
     const [isSticky, setIsSticky] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [cart, setCart] = useState<Product[]>([]);
+
     const containerRef = useRef<HTMLDivElement>(null);
+    const categoriesHeaderRef = useRef<HTMLDivElement>(null);
+    const categoriesFeedRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
             if (containerRef.current) {
                 const scrollPos = containerRef.current.scrollTop;
-                setScrollY(scrollPos);
                 setIsSticky(scrollPos > 100);
             }
         };
@@ -91,6 +123,10 @@ export const StoreCatalog = () => {
     }, []);
 
     const getHandleAddToCart = (product: Product) => {
+        if (mode === 'preview') {
+            return;
+        }
+
         return () => {
             if (product.parameters?.length) {
                 setSelectedProduct(product);
@@ -100,32 +136,83 @@ export const StoreCatalog = () => {
         };
     };
 
+    const getHandleClickCategory = (id: string) => {
+        return () => {
+            if (id === selectedCategory) {
+                setSelectedCategory(undefined);
+
+                return;
+            }
+
+            setSelectedCategory(id);
+
+            const element = document.getElementById(id);
+            const headerHeight = categoriesHeaderRef.current?.offsetHeight || 0;
+
+            if (element && containerRef.current) {
+                const targetPosition = element.offsetTop - headerHeight;
+
+                containerRef.current.scrollTo({ top: targetPosition, behavior: 'smooth' });
+            }
+
+            if (categoriesFeedRef.current) {
+                const categoryElement = categoriesFeedRef.current.querySelector(
+                    `[data-category-id="${id}"]`,
+                ) as HTMLDivElement;
+
+                if (categoryElement) {
+                    const feedWidth = categoriesFeedRef.current.offsetWidth;
+                    const categoryLeft = categoryElement.offsetLeft;
+                    const categoryWidth = categoryElement.offsetWidth;
+                    const newScrollLeft = categoryLeft - feedWidth / 2 + categoryWidth / 2;
+
+                    categoriesFeedRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+                }
+            }
+        };
+    };
+
     return (
-        <>
-            {/*<Drawer open={} onClose={} />*/}
+        <ConsumerThemeProvider theme={theme}>
             <StoreCatalogWrapper ref={containerRef}>
-                <Banner imageUrl="/src/assets/banner-test.png">
+                <Banner imageUrl={'/src/assets/banner-pizza.jpg'}>
                     <StoreInfo>
-                        <Title size="h3">{mockBusiness.name}</Title>
-                        <Text size="b1">{mockBusiness.description}</Text>
-                        <p>⭐ 4.8</p>
+                        <HeaderBlock>
+                            <Title size="h3" color="white">
+                                {name}
+                            </Title>
+                        </HeaderBlock>
+                        <HeaderBlock>
+                            <Text size="b1" color="white">
+                                {description}
+                            </Text>
+                        </HeaderBlock>
                     </StoreInfo>
                 </Banner>
                 <CatalogWrapper>
-                    <CategoriesHeader $isSticky={isSticky}>
-                        <Title size="h3">Категории</Title>
-                        <CategoriesFeed>
-                            {categories?.map(({ id, name, image }) => (
-                                <CategoryChip key={id}>
-                                    <CategoryChip.Image imageSrc={image?.url ?? ''} />
-                                    <CategoryChip.Content>{name}</CategoryChip.Content>
-                                </CategoryChip>
-                            ))}
-                        </CategoriesFeed>
+                    <CategoriesHeader ref={categoriesHeaderRef} $isSticky={isSticky}>
+                        <CatalogSection>
+                            <Title size="h5" weight="bold" color="accent">
+                                Категории
+                            </Title>
+                            <CategoriesFeed ref={categoriesFeedRef} style={{ padding: '0 16px', margin: '0 -16px' }}>
+                                {categories?.map(({ id, name, image }) => (
+                                    <CategoryChip
+                                        key={id}
+                                        data-category-id={id}
+                                        selected={id === selectedCategory}
+                                        onClick={getHandleClickCategory(id)}
+                                    >
+                                        <CategoryChip.Image imageSrc={image?.url ?? ''} />
+                                        <CategoryChip.Content>{name}</CategoryChip.Content>
+                                    </CategoryChip>
+                                ))}
+                            </CategoriesFeed>
+                        </CatalogSection>
                     </CategoriesHeader>
                     {categories?.map(({ id, name, products }) => (
-                        <CatalogSection key={id}>
-                            <Title size="h5" weight="bold" style={{ color: '#ba1924' }}>
+                        <CatalogSection key={id} id={id}>
+                            <Title size="h5" weight="bold" color="accent">
                                 {name}
                             </Title>
                             <ProductsGrid>
@@ -150,6 +237,6 @@ export const StoreCatalog = () => {
                 </CatalogWrapper>
                 {cart.length > 0 && <ShoppingCart color="#ba1924" />}
             </StoreCatalogWrapper>
-        </>
+        </ConsumerThemeProvider>
     );
 };

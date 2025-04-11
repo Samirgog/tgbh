@@ -48,7 +48,7 @@ export const Creator: FunctionComponent = () => {
                         path={RoutesCreator.BUSINESS_PREVIEW}
                         element={
                             <motion.div {...pageVariants}>
-                                <StoreCatalog />
+                                <StoreCatalog mode="preview" />
                             </motion.div>
                         }
                     />

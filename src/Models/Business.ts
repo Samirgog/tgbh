@@ -1,5 +1,3 @@
-import { s } from 'framer-motion/dist/types.d-B50aGbjN';
-
 import { Catalog } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
 

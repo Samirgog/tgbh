@@ -107,10 +107,11 @@ type BusinessCardsFeedProps = {
 };
 
 export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ businesses }) => {
-    const { setMode, setStep } = useBusinessEditorStore();
+    const { setMode, setStep, resetStore } = useBusinessEditorStore();
     const navigate = useNavigate();
 
     const handleClickAddCard = () => {
+        resetStore();
         setMode('add');
         setStep(StepBusinessEditor.PERSONAL_INFO);
         navigate(RoutesCreator.BUSINESS_EDITOR);

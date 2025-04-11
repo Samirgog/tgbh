@@ -19,7 +19,7 @@ export const mockBusiness: Business = {
     },
     store: {
         id: '123-234-345',
-        theme: consumerTheme.default,
+        theme: consumerTheme.blue,
         catalog: mockCatalog,
         payment: {
             types: [PaymentType.SBP, PaymentType.CARD],

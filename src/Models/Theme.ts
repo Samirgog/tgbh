@@ -3,6 +3,9 @@ export type ConsumerThemeColors = {
     accent: string;
     cardBackground: string;
     cardBorder: string;
+    general?: string;
+    secondary?: string;
+    white?: string;
 };
 
 export type ConsumerTheme = {

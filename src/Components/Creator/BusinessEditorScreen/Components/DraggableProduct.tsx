@@ -115,6 +115,9 @@ export const DraggableProduct: FunctionComponent<Props> = ({ product, categoryId
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
                     transform: `scale(${scale})`,
                     transition: 'transform 0.2s ease',
                     position: 'relative',
