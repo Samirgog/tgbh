@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import {
@@ -11,6 +12,7 @@ import {
 } from '@/Components/Creator/BusinessEditorScreen/Components';
 import { ConsumerThemeProvider } from '@/ConsumerThemeProvider';
 import { StepBusinessEditor } from '@/Enums';
+import { useTelegramBackButton } from '@/Hooks/useTelegramBackButton';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Container = styled.div`
@@ -32,7 +34,16 @@ const StepWrapper = styled(motion.div)`
 `;
 
 export const BusinessEditorScreen: FunctionComponent = () => {
-    const { step, theme } = useBusinessEditorStore();
+    const { step, mode, goBack, theme } = useBusinessEditorStore();
+    const navigate = useNavigate();
+
+    useTelegramBackButton(() => {
+        if (step === StepBusinessEditor.PERSONAL_INFO || mode === 'edit') {
+            navigate(-1);
+        } else {
+            goBack();
+        }
+    });
 
     return (
         <ConsumerThemeProvider theme={theme}>

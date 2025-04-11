@@ -9,6 +9,7 @@ import { List } from '@/Components/@ui-kit';
 import { Button } from '@/Components/@ui-kit/Button';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { RoutesCreator, StepBusinessEditor } from '@/Enums';
+import { useTelegramBackButton } from '@/Hooks/useTelegramBackButton';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Container = styled.div`
@@ -119,6 +120,8 @@ export const BusinessManagementScreen: FunctionComponent = () => {
         ),
     );
     const navigate = useNavigate();
+
+    useTelegramBackButton(() => navigate(-1));
 
     useEffect(() => {
         updateBusinessInfo({

@@ -8,6 +8,7 @@ import { FileUploader } from '@/Components/@ui-kit/FileUploader';
 import { Input } from '@/Components/@ui-kit/Input';
 import { Text } from '@/Components/@ui-kit/Typography';
 import { StepBusinessEditor } from '@/Enums';
+import { useTelegramBackButton } from '@/Hooks/useTelegramBackButton';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`

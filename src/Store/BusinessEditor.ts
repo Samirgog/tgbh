@@ -24,6 +24,7 @@ type ReceiveInfo = {
 type BusinessEditorStore = {
     mode: 'add' | 'edit';
     step: StepBusinessEditor;
+    stepHistory: StepBusinessEditor[];
     personalInfo: PersonalInfo;
     businessInfo: BusinessInfo;
     paymentInfo: PaymentInfo;
@@ -33,6 +34,7 @@ type BusinessEditorStore = {
 
     setMode: (mode: 'add' | 'edit') => void;
     setStep: (step: StepBusinessEditor) => void;
+    goBack: () => void;
 
     updatePersonalInfo: (data: Partial<PersonalInfo>) => void;
     updateBusinessInfo: (data: Partial<BusinessInfo>) => void;
@@ -70,9 +72,11 @@ const initialState: Omit<
     | 'updateProduct'
     | 'updateTheme'
     | 'resetStore'
+    | 'goBack'
 > = {
     mode: 'add',
     step: StepBusinessEditor.PERSONAL_INFO,
+    stepHistory: [StepBusinessEditor.PERSONAL_INFO],
     personalInfo: {
         firstName: '',
         lastName: '',
@@ -99,11 +103,31 @@ const initialState: Omit<
     theme: consumerTheme.default,
 };
 
-export const useBusinessEditorStore = create<BusinessEditorStore>((set) => ({
+export const useBusinessEditorStore = create<BusinessEditorStore>((set, get) => ({
     ...initialState,
 
     setMode: (mode) => set({ mode }),
-    setStep: (step) => set({ step }),
+    setStep: (newStep: StepBusinessEditor) => {
+        const { stepHistory } = get();
+        if (newStep !== stepHistory[stepHistory.length - 1]) {
+            set({
+                step: newStep,
+                stepHistory: [...stepHistory, newStep],
+            });
+        }
+    },
+
+    goBack: () => {
+        const { stepHistory } = get();
+        if (stepHistory.length > 1) {
+            const updatedHistory = stepHistory.slice(0, -1);
+            const prevStep = updatedHistory[updatedHistory.length - 1];
+            set({
+                step: prevStep,
+                stepHistory: updatedHistory,
+            });
+        }
+    },
     updatePersonalInfo: (data) => set((state) => ({ personalInfo: { ...state.personalInfo, ...data } })),
     updateBusinessInfo: (data) => set((state) => ({ businessInfo: { ...state.businessInfo, ...data } })),
     updatePaymentInfo: (data) => set((state) => ({ paymentInfo: { ...state.paymentInfo, ...data } })),
