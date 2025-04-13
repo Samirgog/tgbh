@@ -1,9 +1,6 @@
-import { ShoppingCart } from 'lucide-react';
 import { FunctionComponent, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { mockBusiness } from '@/__mock__/business';
 import placeholderImage from '@/assets/placeholder_image.png';
 import { Text, Title } from '@/Components/@ui-kit';
 import { CatalogSection } from '@/Components/Common/CatalogSection';
@@ -87,23 +84,19 @@ const HeaderBlock = styled.div`
 `;
 
 type Props = {
-    mode?: 'preview' | 'full';
+    business: Business;
+    onClickProduct?: (product: Product) => void;
 };
 
-export const StoreCatalog: FunctionComponent<Props> = ({ mode = 'full' }) => {
-    const location = useLocation();
-    const business = location.state?.business as Business;
+export const StoreCatalog: FunctionComponent<Props> = ({ business, onClickProduct }) => {
+    const { name, banner, description, store } = business ?? {};
     const {
-        name,
-        banner,
-        description,
-        store: { catalog: { categories = [] } = {}, theme } = {},
-    } = business ?? mockBusiness;
+        catalog: { categories },
+        theme,
+    } = store ?? {};
 
     const [isSticky, setIsSticky] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
-    const [selectedProduct, setSelectedProduct] = useState<Product>();
-    const [cart, setCart] = useState<Product[]>([]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const categoriesHeaderRef = useRef<HTMLDivElement>(null);
@@ -121,20 +114,6 @@ export const StoreCatalog: FunctionComponent<Props> = ({ mode = 'full' }) => {
         if (el) el.addEventListener('scroll', handleScroll);
         return () => el?.removeEventListener('scroll', handleScroll);
     }, []);
-
-    const getHandleAddToCart = (product: Product) => {
-        if (mode === 'preview') {
-            return;
-        }
-
-        return () => {
-            if (product.parameters?.length) {
-                setSelectedProduct(product);
-            } else {
-                setCart((prev) => [...prev, product]);
-            }
-        };
-    };
 
     const getHandleClickCategory = (id: string) => {
         return () => {
@@ -172,10 +151,16 @@ export const StoreCatalog: FunctionComponent<Props> = ({ mode = 'full' }) => {
         };
     };
 
+    const getHandleClickProduct = (product: Product) => {
+        return () => {
+            onClickProduct?.(product);
+        };
+    };
+
     return (
         <ConsumerThemeProvider theme={theme}>
             <StoreCatalogWrapper ref={containerRef}>
-                <Banner imageUrl={'/src/assets/banner-pizza.jpg'}>
+                <Banner imageUrl={banner?.url ?? '/src/assets/banner-pizza.jpg'}>
                     <StoreInfo>
                         <HeaderBlock>
                             <Title size="h3" color="white">
@@ -217,7 +202,7 @@ export const StoreCatalog: FunctionComponent<Props> = ({ mode = 'full' }) => {
                             </Title>
                             <ProductsGrid>
                                 {products?.map((product) => (
-                                    <CatalogCard key={id} onClick={getHandleAddToCart(product)}>
+                                    <CatalogCard key={id} onClick={getHandleClickProduct(product)}>
                                         <CatalogCard.Image imageSrc={product.image?.url ?? placeholderImage} />
                                         <CatalogCard.Content>
                                             <CatalogCard.Content.Title>{product.name}</CatalogCard.Content.Title>
@@ -235,7 +220,6 @@ export const StoreCatalog: FunctionComponent<Props> = ({ mode = 'full' }) => {
                         </CatalogSection>
                     ))}
                 </CatalogWrapper>
-                {cart.length > 0 && <ShoppingCart color="#ba1924" />}
             </StoreCatalogWrapper>
         </ConsumerThemeProvider>
     );

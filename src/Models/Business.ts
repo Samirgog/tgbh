@@ -18,7 +18,7 @@ export type Business = {
     personalInfo: PersonalInfo;
     store: {
         id: string;
-        theme: ConsumerTheme;
+        theme?: ConsumerTheme;
         catalog: Catalog;
         payment: {
             types: string[];

@@ -2,9 +2,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import { StoreCatalog } from '@/Components/Common/StoreCatalog';
 import { BusinessEditorScreen } from '@/Components/Creator/BusinessEditorScreen';
 import { BusinessManagementScreen } from '@/Components/Creator/BusinessManagementScreen';
+import { StorePreview } from '@/Components/Creator/StorePreview';
 import { RoutesCreator } from '@/Enums';
 
 import { MainScreen } from './MainScreen';
@@ -48,7 +48,7 @@ export const Creator: FunctionComponent = () => {
                         path={RoutesCreator.BUSINESS_PREVIEW}
                         element={
                             <motion.div {...pageVariants}>
-                                <StoreCatalog mode="preview" />
+                                <StorePreview />
                             </motion.div>
                         }
                     />

@@ -5,4 +5,5 @@ export * from './FileUploader';
 export * from './Input';
 export * from './List';
 export * from './MultiSelect';
+export * from './Selector';
 export * from './Typography';

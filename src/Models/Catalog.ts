@@ -3,13 +3,15 @@ export type Price = {
     currency: string;
 };
 
+export type Parameter = { text: string; price?: Price };
+
 export type Product = {
     id: string;
     name: string;
     description?: string;
     image?: { url: string | null; name: string };
     price?: Price;
-    parameters?: { text: string; price?: Price }[];
+    parameters?: Parameter[];
 };
 
 export type Category = {

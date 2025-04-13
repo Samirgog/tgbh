@@ -6,6 +6,10 @@ export enum RoutesCreator {
     BUSINESS_PREVIEW = '/business-preview',
 }
 
+export enum RoutesConsumer {
+    STORE = '/store',
+}
+
 export enum StepBusinessEditor {
     PERSONAL_INFO = 'personal_info',
     BUSINESS_INFO = 'business_info',
