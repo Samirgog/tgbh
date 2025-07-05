@@ -1,7 +1,8 @@
 import { Loader2, Paperclip, RotateCcw, X } from 'lucide-react';
-import { ChangeEvent, FunctionComponent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 
+import { useUploadFile } from '@/api/hooks/useUploadFile';
 import { Text } from '@/Components/@ui-kit/Typography';
 
 const Container = styled.div`
@@ -65,7 +66,7 @@ const IconWrapper = styled.div<{ $status?: UploadStatus }>`
     background-color: ${({ $status }) =>
         $status === 'error'
             ? 'rgba(241, 46, 46, 0.05)'
-            : $status === 'uploading'
+            : $status === 'loading'
               ? 'rgba(67, 120, 255, 0.1)'
               : 'transparent'};
 `;
@@ -77,7 +78,7 @@ const ImagePreview = styled.img`
     object-fit: cover;
 `;
 
-type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
+type UploadStatus = 'idle' | 'loading' | 'success' | 'error';
 
 type FileUploadProps = {
     label?: string;
@@ -86,40 +87,51 @@ type FileUploadProps = {
 };
 
 export const FileUploader: FunctionComponent<FileUploadProps> = ({ label = '', defaultImage, onFileUpload }) => {
+    const { uploadFile } = useUploadFile();
+
     const [image, setImage] = useState<string | null | undefined>();
     const [fileName, setFileName] = useState<string | null>(null);
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [status, setStatus] = useState<UploadStatus>('idle');
+    const [preview, setPreview] = useState<string | null>(null);
 
     useEffect(() => {
         if (defaultImage?.url && defaultImage?.name) {
             setImage(defaultImage.url);
-            setFileName(defaultImage.name ?? '');
+            setFileName(defaultImage.name);
             setStatus('success');
         }
     }, [defaultImage]);
 
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (file.size > 5 * 1024 * 1024) {
+            setStatus('error');
+            return;
+        }
+
         setStatus('loading');
 
-        // Эмулируем загрузку (замени на реальную отправку на сервер)
-        setTimeout(() => {
-            if (file.size > 5 * 1024 * 1024) {
-                setStatus('error');
-                return;
-            }
+        // const reader = new FileReader();
+        // reader.onloadend = () => {
+        //     setPreview(reader.result as string);
+        // };
+        // reader.readAsDataURL(file);
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result as string);
-                setFileName(file.name);
-                setStatus('success');
-                onFileUpload?.({ url: reader.result as string, name: file.name });
-            };
-            reader.readAsDataURL(file);
-        }, 1500);
+        try {
+            const uploaded = await uploadFile(file);
+
+            await new Promise((res) => setTimeout(res, 500));
+
+            setImage(uploaded.url); // реальный URL
+            setFileName(uploaded.filename);
+            setStatus('success');
+            onFileUpload?.({ url: uploaded.url, name: uploaded.filename });
+        } catch (e) {
+            console.error(e);
+            setStatus('error');
+        }
     };
 
     const handleReset = () => {
@@ -139,7 +151,7 @@ export const FileUploader: FunctionComponent<FileUploadProps> = ({ label = '', d
             )}
             {status === 'loading' && fileName && (
                 <FileItem>
-                    <IconWrapper $status="uploading">
+                    <IconWrapper $status="loading">
                         <Loader2 size={24} className="animate-spin" />
                     </IconWrapper>
                     <FileName>{fileName}</FileName>
@@ -147,7 +159,7 @@ export const FileUploader: FunctionComponent<FileUploadProps> = ({ label = '', d
             )}
             {status === 'success' && image && fileName && (
                 <FileItem $status="success">
-                    <ImagePreview src={image} alt="Uploaded" />
+                    <ImagePreview src={image || ''} alt="Uploaded" />
                     <Content>
                         <FileName>{fileName}</FileName>
                         <Text size="b3" color="secondary">

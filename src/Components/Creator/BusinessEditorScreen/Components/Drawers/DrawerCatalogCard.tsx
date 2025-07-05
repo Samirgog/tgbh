@@ -106,7 +106,10 @@ type Props = {
 
 export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onSave, product }) => {
     const { control, handleSubmit, watch, reset } = useForm<ProductForm>({
-        defaultValues: { ...product, addParameters: Boolean(product?.parameters?.length) },
+        defaultValues: {
+            ...product,
+            addParameters: Boolean(product?.parameters?.length),
+        },
     });
 
     const { fields, append, remove } = useFieldArray({

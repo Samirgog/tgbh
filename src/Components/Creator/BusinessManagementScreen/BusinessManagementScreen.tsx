@@ -1,10 +1,10 @@
 import { BarChart, CheckCircle, CreditCard, Edit, LayoutGrid, MessageSquare, Star, Truck } from 'lucide-react';
-import React, { FunctionComponent, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { FunctionComponent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
-import { mockBusiness } from '@/__mock__/business';
+import { useStoreById } from '@/api/hooks/useStoreById';
 import { List } from '@/Components/@ui-kit';
 import { Button } from '@/Components/@ui-kit/Button';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
@@ -84,81 +84,69 @@ const ProItem = styled.div`
 `;
 
 export const BusinessManagementScreen: FunctionComponent = () => {
-    const {
-        catalog,
-        businessInfo,
-        theme,
-        updateBusinessInfo,
-        updateCatalog,
-        updateReceiveInfo,
-        updatePaymentInfo,
-        updateTheme,
-        setStep,
-    } = useBusinessEditorStore(
-        useShallow(
-            ({
-                catalog,
-                businessInfo,
-                theme,
-                updateBusinessInfo,
-                updateCatalog,
-                updateReceiveInfo,
-                updatePaymentInfo,
-                updateTheme,
-                setStep,
-            }) => ({
-                catalog,
-                businessInfo,
-                theme,
-                updateBusinessInfo,
-                updateCatalog,
-                updateReceiveInfo,
-                updatePaymentInfo,
-                updateTheme,
-                setStep,
-            }),
-        ),
-    );
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const { data: { storeWithDetails } = {} } = useStoreById(location.state?.storeId);
+    const { bannerUrl, bannerName, name, description, paymentMethods } = storeWithDetails ?? {};
+    const { setStep, updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo } = useBusinessEditorStore(
+        useShallow(({ setStep, updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo }) => ({
+            setStep,
+            updateBusinessInfo,
+            updateCatalog,
+            updateReceiveInfo,
+            updatePaymentInfo,
+        })),
+    );
 
     useTelegramBackButton(() => navigate(-1));
-
-    useEffect(() => {
-        updateBusinessInfo({
-            name: mockBusiness.name,
-            banner: mockBusiness.banner,
-            description: mockBusiness.description,
-        });
-        updateCatalog(mockBusiness.store.catalog);
-        updateReceiveInfo(mockBusiness.store.receiveInfo);
-        updatePaymentInfo(mockBusiness.store.payment);
-        updateTheme(mockBusiness.store.theme);
-    }, [updateBusinessInfo, updateCatalog, updateReceiveInfo, updatePaymentInfo, updateTheme]);
 
     const handleClickPreview = () => {
         navigate(RoutesCreator.BUSINESS_PREVIEW, {
             state: {
-                business: { ...businessInfo, store: { catalog, theme } },
+                store: storeWithDetails,
             },
         });
     };
 
     const handleEditBusinessInfo = () => {
+        updateBusinessInfo({ name, description, banner: { url: bannerUrl ?? '', name: bannerName ?? '' } });
         setStep(StepBusinessEditor.BUSINESS_INFO);
         navigate(RoutesCreator.BUSINESS_EDITOR);
     };
 
     const handleEditCatalog = () => {
+        updateCatalog({
+            categories: storeWithDetails?.categories?.map(({ id, name, priority, imageName, imageUrl, products }) => ({
+                id,
+                name,
+                priority,
+                products: products?.map(({ id, name, description, imageName, imageUrl, priceAmount }) => ({
+                    id,
+                    name,
+                    description: description ?? undefined,
+                    imageName,
+                    imageUrl,
+                    priceAmount,
+                })),
+                image: { url: imageUrl ?? '', name: imageName ?? '' },
+            })),
+        });
         setStep(StepBusinessEditor.CATALOG_CONSTRUCTOR);
         navigate(RoutesCreator.BUSINESS_EDITOR);
     };
 
     const handleEditReceive = () => {
+        updateReceiveInfo({ ways: storeWithDetails?.deliveryMethods?.map(({ receiveWay }) => receiveWay) });
         setStep(StepBusinessEditor.RECEIVE_INFO);
         navigate(RoutesCreator.BUSINESS_EDITOR);
     };
 
     const handleEditPayment = () => {
+        updatePaymentInfo({
+            types: storeWithDetails?.paymentMethods?.map(({ type }) => type),
+            conditions: storeWithDetails?.paymentConditions?.map(({ condition }) => condition),
+        });
         setStep(StepBusinessEditor.PAYMENT_INFO);
         navigate(RoutesCreator.BUSINESS_EDITOR);
     };
@@ -166,14 +154,14 @@ export const BusinessManagementScreen: FunctionComponent = () => {
     return (
         <Container>
             <Banner>
-                <img alt="" src={mockBusiness.banner?.url} />
+                <img alt="" src={bannerUrl ?? ''} />
             </Banner>
             <Header>
                 <Title size="h4" weight="medium">
-                    {mockBusiness.name}
+                    {name}
                 </Title>
                 <Text size="b2" color="secondary">
-                    {mockBusiness.description}
+                    {description}
                 </Text>
             </Header>
             <Button variant="outlined" onClick={handleClickPreview}>

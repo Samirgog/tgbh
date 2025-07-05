@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { BusinessEditorScreen } from '@/Components/Creator/BusinessEditorScreen';
 import { BusinessManagementScreen } from '@/Components/Creator/BusinessManagementScreen';
+import { ProfileScreen } from '@/Components/Creator/ProfileScreen';
 import { StorePreview } from '@/Components/Creator/StorePreview';
 import { RoutesCreator } from '@/Enums';
 
@@ -25,6 +26,14 @@ export const Creator: FunctionComponent = () => {
                         element={
                             <motion.div {...pageVariants}>
                                 <MainScreen />
+                            </motion.div>
+                        }
+                    />
+                    <Route
+                        path={RoutesCreator.PROFILE}
+                        element={
+                            <motion.div {...pageVariants}>
+                                <ProfileScreen />
                             </motion.div>
                         }
                     />

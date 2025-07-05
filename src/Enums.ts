@@ -1,17 +1,18 @@
 export enum RoutesCreator {
     MAIN = '/',
     BUSINESS_EDITOR = '/business-editor',
-    CATALOG_PREVIEW = '/catalog-preview',
     BUSINESS_MANAGEMENT = '/business-management',
     BUSINESS_PREVIEW = '/business-preview',
+    PROFILE = '/profile',
 }
 
 export enum RoutesConsumer {
-    STORE = '/store',
+    MAIN = '/',
+    ORDER = '/order',
+    ADDRESS_MAP = '/addresses-map',
 }
 
 export enum StepBusinessEditor {
-    PERSONAL_INFO = 'personal_info',
     BUSINESS_INFO = 'business_info',
     PAYMENT_INFO = 'payment_info',
     RECEIVE_INFO = 'receive_info',
@@ -19,22 +20,28 @@ export enum StepBusinessEditor {
 }
 
 export enum PaymentType {
-    CASH = 'cash',
-    SBP = 'sbp',
-    CARD = 'card',
+    CASH = 'CASH',
+    SBP = 'SBP',
+    CARD = 'CARD',
 }
 
 export enum PaymentCondition {
-    PREPAYMENT = 'prepayment',
-    UPON_RECEIPT = 'upon_receipt',
+    PREPAYMENT = 'PREPAYMENT',
+    UPON_RECEIPT = 'UPON_RECEIPT',
 }
 
 export enum ReceiveWays {
-    PICKUP = 'pickup',
-    DELIVERY = 'delivery',
+    PICKUP = 'PICKUP',
+    DELIVERY = 'DELIVERY',
 }
 
 export enum DndType {
     CATEGORY = 'category',
     PRODUCT = 'product',
+}
+
+export enum UserRole {
+    ADMIN = 'ADMIN',
+    STORE_OWNER = 'STORE_OWNER',
+    CUSTOMER = 'CUSTOMER',
 }

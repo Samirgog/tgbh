@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,7 +8,6 @@ import { FileUploader } from '@/Components/@ui-kit/FileUploader';
 import { Input } from '@/Components/@ui-kit/Input';
 import { Text } from '@/Components/@ui-kit/Typography';
 import { StepBusinessEditor } from '@/Enums';
-import { useTelegramBackButton } from '@/Hooks/useTelegramBackButton';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`
@@ -38,6 +37,10 @@ const ButtonWrapper = styled.div`
 type BusinessInfoForm = {
     name: string;
     description: string;
+    banner: {
+        url?: string;
+        name?: string;
+    };
 };
 
 export const StepBusinessInfo: FunctionComponent = () => {
@@ -71,7 +74,7 @@ export const StepBusinessInfo: FunctionComponent = () => {
                     name="name"
                     control={control}
                     render={({ field }) => (
-                        <Input {...field} label="Название вашего Бизнеса" placeholder="Введите название" />
+                        <Input {...field} label="Название вашего Магазина" placeholder="Введите название" />
                     )}
                 />
                 <Controller
@@ -80,11 +83,17 @@ export const StepBusinessInfo: FunctionComponent = () => {
                     render={({ field }) => <Input {...field} label="Описание" placeholder="Введите описание" />}
                 />
                 <UploaderZone>
-                    <Text size="b1">Добавьте баннер для своей компании*</Text>
+                    <Text size="b1">Добавьте баннер для магазина*</Text>
                     <Text size="b3" color="secondary">
-                        * Изображение будет видно всем клиентам на главной странице вашего бизнес—магазина
+                        * Изображение будет видно всем клиентам на главной странице вашего магазина
                     </Text>
-                    <FileUploader label="Загрузить изображение" />
+                    <Controller
+                        control={control}
+                        name="banner"
+                        render={({ field: { value, onChange } }) => (
+                            <FileUploader label="Загрузить изображение" defaultImage={value} onFileUpload={onChange} />
+                        )}
+                    />
                 </UploaderZone>
             </InputsWrapper>
             <ButtonWrapper>

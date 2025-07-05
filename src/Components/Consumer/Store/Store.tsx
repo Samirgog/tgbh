@@ -1,13 +1,17 @@
 import { ShoppingCart } from 'lucide-react';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useShallow } from 'zustand/react/shallow';
 
 import { mockBusiness } from '@/__mock__/business';
 import { Text } from '@/Components/@ui-kit';
 import { StoreCatalog } from '@/Components/Common/StoreCatalog';
 import { DrawerProduct } from '@/Components/Consumer/Store/DrawerProduct';
 import { useControlProduct } from '@/Components/Consumer/Store/useControlProduct';
-import { Product } from '@/Models/Catalog';
+import { RoutesConsumer } from '@/Enums';
+import { Parameter, Product } from '@/Models/Catalog';
+import { useConsumerStore } from '@/Store/Consumer';
 
 const Container = styled.div`
     display: flex;
@@ -36,31 +40,56 @@ const Cart = styled.button`
 `;
 
 export const Store: FunctionComponent = () => {
-    const [cart, setCart] = useState<Product[]>([]);
+    const navigate = useNavigate();
+    const { cart, addCartItem, removeCartItem, getTotal } = useConsumerStore(
+        useShallow(({ cart, addCartItem, removeCartItem, getTotal }) => ({
+            cart,
+            addCartItem,
+            removeCartItem,
+            getTotal,
+        })),
+    );
     const { product, isOpenDrawer, openProductDrawer, closeProductDrawer } = useControlProduct();
 
-    const handleAddToCart = (product: Product) => {
-        if (product.parameters?.length) {
-            openProductDrawer(product);
-        } else {
-            setCart((prev) => [...prev, product]);
+    const handleClickProduct = (product: Product) => {
+        openProductDrawer(product);
+    };
+
+    const handleAddToCart = ({ quantity, parameter }: { quantity: number; parameter?: Parameter }) => {
+        if (!product) {
+            return;
         }
+
+        if (quantity <= 0) {
+            removeCartItem({ productId: product.id, parameterId: parameter?.id });
+        } else {
+            addCartItem({ product, quantity, parameter });
+        }
+
+        closeProductDrawer();
     };
 
     const handleClickCart = () => {
-        console.log({ cart });
+        navigate(RoutesConsumer.ORDER);
     };
+
+    const total = getTotal();
 
     return (
         <>
-            <DrawerProduct open={isOpenDrawer} onClose={closeProductDrawer} product={product} />
+            <DrawerProduct
+                open={isOpenDrawer}
+                onClose={closeProductDrawer}
+                product={product}
+                onAddToCart={handleAddToCart}
+            />
             <Container>
-                <StoreCatalog business={mockBusiness} onClickProduct={handleAddToCart} />
+                <StoreCatalog business={mockBusiness} onClickProduct={handleClickProduct} />
                 {cart?.length > 0 && (
                     <Cart onClick={handleClickCart}>
                         <ShoppingCart size={20} />
                         <Text size="b1" color="white" weight="bold">
-                            {cart.reduce((acc, prev) => acc + (prev?.price?.amount ?? 0), 0)}
+                            {total.amount} {total.currency}
                         </Text>
                     </Cart>
                 )}

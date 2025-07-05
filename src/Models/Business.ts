@@ -1,14 +1,6 @@
 import { Catalog } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
-
-export type PersonalInfo = {
-    firstName: string;
-    lastName: string;
-    middleName?: string;
-    email: string;
-    isCompanyOwner: boolean;
-    acceptedTerms: boolean;
-};
+import { PersonalInfo } from '@/Models/User';
 
 export type Business = {
     id: string;

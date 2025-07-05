@@ -1,6 +1,7 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { TProductResponseDto, TStoreResponseDto } from '@/api/generated';
 import placeholderImage from '@/assets/placeholder_image.png';
 import { Text, Title } from '@/Components/@ui-kit';
 import { CatalogSection } from '@/Components/Common/CatalogSection';
@@ -8,9 +9,8 @@ import { CategoriesFeed } from '@/Components/Common/CategoriesFeed';
 import { ProductsGrid } from '@/Components/Common/ProductsGrid';
 import { CatalogCard } from '@/Components/Customizable/CatalogCard';
 import { CategoryChip } from '@/Components/Customizable/CategoryChip';
+import { RUBLE_SYMBOL } from '@/Consts';
 import { ConsumerThemeProvider } from '@/ConsumerThemeProvider';
-import { Business } from '@/Models/Business';
-import { Product } from '@/Models/Catalog';
 
 const StoreCatalogWrapper = styled.div`
     position: relative;
@@ -84,16 +84,12 @@ const HeaderBlock = styled.div`
 `;
 
 type Props = {
-    business: Business;
-    onClickProduct?: (product: Product) => void;
+    store: TStoreResponseDto;
+    onClickProduct?: (product: TProductResponseDto) => void;
 };
 
-export const StoreCatalog: FunctionComponent<Props> = ({ business, onClickProduct }) => {
-    const { name, banner, description, store } = business ?? {};
-    const {
-        catalog: { categories },
-        theme,
-    } = store ?? {};
+export const StoreCatalog: FunctionComponent<Props> = ({ store, onClickProduct }) => {
+    const { name, bannerUrl, description, categories, theme } = store ?? {};
 
     const [isSticky, setIsSticky] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
@@ -151,16 +147,16 @@ export const StoreCatalog: FunctionComponent<Props> = ({ business, onClickProduc
         };
     };
 
-    const getHandleClickProduct = (product: Product) => {
+    const getHandleClickProduct = (product: TProductResponseDto) => {
         return () => {
             onClickProduct?.(product);
         };
     };
 
     return (
-        <ConsumerThemeProvider theme={theme}>
+        <ConsumerThemeProvider>
             <StoreCatalogWrapper ref={containerRef}>
-                <Banner imageUrl={banner?.url ?? '/src/assets/banner-pizza.jpg'}>
+                <Banner imageUrl={bannerUrl ?? '/src/assets/banner-pizza.jpg'}>
                     <StoreInfo>
                         <HeaderBlock>
                             <Title size="h3" color="white">
@@ -181,14 +177,14 @@ export const StoreCatalog: FunctionComponent<Props> = ({ business, onClickProduc
                                 Категории
                             </Title>
                             <CategoriesFeed ref={categoriesFeedRef} style={{ padding: '0 16px', margin: '0 -16px' }}>
-                                {categories?.map(({ id, name, image }) => (
+                                {categories?.map(({ id, name, imageUrl }) => (
                                     <CategoryChip
                                         key={id}
                                         data-category-id={id}
                                         selected={id === selectedCategory}
                                         onClick={getHandleClickCategory(id)}
                                     >
-                                        <CategoryChip.Image imageSrc={image?.url ?? ''} />
+                                        <CategoryChip.Image imageSrc={imageUrl ?? ''} />
                                         <CategoryChip.Content>{name}</CategoryChip.Content>
                                     </CategoryChip>
                                 ))}
@@ -203,15 +199,15 @@ export const StoreCatalog: FunctionComponent<Props> = ({ business, onClickProduc
                             <ProductsGrid>
                                 {products?.map((product) => (
                                     <CatalogCard key={id} onClick={getHandleClickProduct(product)}>
-                                        <CatalogCard.Image imageSrc={product.image?.url ?? placeholderImage} />
+                                        <CatalogCard.Image imageSrc={product.imageUrl ?? placeholderImage} />
                                         <CatalogCard.Content>
                                             <CatalogCard.Content.Title>{product.name}</CatalogCard.Content.Title>
                                             <CatalogCard.Content.Description>
                                                 {product.description}
                                             </CatalogCard.Content.Description>
                                             <CatalogCard.Content.Price
-                                                currency={product.price?.currency}
-                                                amount={product.price?.amount}
+                                                currency={product.priceCurrency ?? RUBLE_SYMBOL}
+                                                amount={product.priceAmount}
                                             />
                                         </CatalogCard.Content>
                                     </CatalogCard>

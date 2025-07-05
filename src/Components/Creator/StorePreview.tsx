@@ -1,12 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { TStoreResponseDto } from '@/api/generated';
 import { StoreCatalog } from '@/Components/Common/StoreCatalog';
-import { Business } from '@/Models/Business';
 
 export const StorePreview: FunctionComponent = () => {
     const location = useLocation();
-    const business = location.state?.business as Business;
+    const business = location.state?.store as TStoreResponseDto;
 
-    return <StoreCatalog business={business} />;
+    return <StoreCatalog store={business} />;
 };

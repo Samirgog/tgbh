@@ -2,6 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { FunctionComponent } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
+import { OrderScreen } from '@/Components/Consumer/OrderScreen';
+import { Map } from '@/Components/Consumer/OrderScreen/Components/Map';
 import { Store } from '@/Components/Consumer/Store';
 import { RoutesConsumer } from '@/Enums';
 
@@ -17,10 +19,26 @@ export const Consumer: FunctionComponent = () => {
             <AnimatePresence mode="wait">
                 <Routes>
                     <Route
-                        path={RoutesConsumer.STORE}
+                        path={RoutesConsumer.MAIN}
                         element={
                             <motion.div {...pageVariants}>
                                 <Store />
+                            </motion.div>
+                        }
+                    />
+                    <Route
+                        path={RoutesConsumer.ORDER}
+                        element={
+                            <motion.div {...pageVariants}>
+                                <OrderScreen />
+                            </motion.div>
+                        }
+                    />
+                    <Route
+                        path={RoutesConsumer.ADDRESS_MAP}
+                        element={
+                            <motion.div {...pageVariants}>
+                                <Map />
                             </motion.div>
                         }
                     />

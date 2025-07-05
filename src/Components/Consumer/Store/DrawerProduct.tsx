@@ -1,8 +1,9 @@
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Drawer, Selector, Text, Title } from '@/Components/@ui-kit';
+import { QuantityInput } from '@/Components/Common/QuantityInput';
 import { Parameter, Product } from '@/Models/Catalog';
 
 const Wrapper = styled.div`
@@ -27,30 +28,6 @@ const Subtitle = styled.div`
     align-items: center;
     text-align: center;
     margin: 8px 0 16px;
-`;
-
-const QuantityWrapper = styled.div`
-    display: flex;
-    background: #f3eae7;
-    border-radius: 999px;
-    align-items: center;
-    overflow: hidden;
-`;
-
-const QuantityButton = styled.button`
-    background: transparent;
-    border: none;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-`;
-
-const QuantityValue = styled.div`
-    background: white;
-    padding: 10px 20px;
-    font-weight: bold;
-    font-size: 16px;
 `;
 
 const PriceWrapper = styled.div`
@@ -81,20 +58,29 @@ type Props = {
     open: boolean;
     onClose: () => void;
     product?: Product;
-    onAddToCart?: (params: { parameter: Parameter; quantity: number }) => void;
+    onAddToCart?: (params: { quantity: number; parameter?: Parameter }) => void;
 };
 
 export const DrawerProduct: FC<Props> = ({ open, onClose, product, onAddToCart }) => {
-    const [selectedParameter, setSelectedParameter] = useState<Parameter | undefined>(product?.parameters?.[0]);
+    const [selectedParameter, setSelectedParameter] = useState<Parameter | undefined>(() => product?.parameters?.[0]);
     const [quantity, setQuantity] = useState<number>(1);
 
     const handleAddToCart = () => {
-        if (selectedParameter) {
-            onAddToCart?.({ parameter: selectedParameter, quantity });
-        } else {
-            onClose();
-        }
+        onAddToCart?.({ parameter: selectedParameter, quantity: quantity ?? 0 });
     };
+
+    useEffect(() => {
+        if (!open) {
+            setQuantity(1);
+            setSelectedParameter(undefined);
+        }
+    }, [open]);
+
+    useEffect(() => {
+        if (open && product?.parameters) {
+            setSelectedParameter(product.parameters[0]);
+        }
+    }, [open, product]);
 
     return (
         <Drawer open={open} onClose={onClose}>
@@ -115,18 +101,12 @@ export const DrawerProduct: FC<Props> = ({ open, onClose, product, onAddToCart }
                         setSelectedParameter(product?.parameters?.find((parameter) => parameter.text === param))
                     }
                 />
-                <QuantityWrapper>
-                    <QuantityButton onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
-                        <Minus size={16} />
-                    </QuantityButton>
-                    <QuantityValue>{quantity}</QuantityValue>
-                    <QuantityButton onClick={() => setQuantity((q) => q + 1)}>
-                        <Plus size={16} />
-                    </QuantityButton>
-                </QuantityWrapper>
+                <QuantityInput quantity={quantity} onChange={setQuantity} />
                 <PriceWrapper>
                     <Title size="h4" color="accent" weight="bold">
-                        {selectedParameter?.price?.amount} {selectedParameter?.price?.currency}
+                        {selectedParameter
+                            ? `${(selectedParameter.price?.amount ?? 0) * quantity} ${selectedParameter.price?.currency}`
+                            : `${(product?.price?.amount ?? 0) * quantity} ${product?.price?.currency}`}
                     </Title>
                 </PriceWrapper>
                 <AddToCartButton onClick={handleAddToCart}>

@@ -1,9 +1,11 @@
 import { FunctionComponent, HTMLAttributes } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { useStoreById } from '@/api/hooks/useStoreById';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { RoutesCreator, StepBusinessEditor } from '@/Enums';
+import { Store } from '@/Models/User';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const AddIcon = () => (
@@ -17,10 +19,11 @@ const AddIcon = () => (
 
 const FeedContainer = styled.div`
     display: flex;
+    flex-direction: column;
     overflow-x: auto;
     gap: ${({ theme }) => theme.spacing(1)};
-    padding: 10px;
-    margin: -10px;
+    padding: 16px;
+    margin: -16px;
     scrollbar-width: none;
     &::-webkit-scrollbar {
         display: none;
@@ -55,7 +58,7 @@ const AddCardContent = styled.div`
 const ImageContainer = styled.div`
     width: 100%;
     height: 218px;
-    background: #f0f0f0; /* Заглушка под изображение */
+    background: #f0f0f0;
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
 
@@ -75,13 +78,13 @@ const Content = styled.div`
 `;
 
 type BusinessCardProps = {
-    imageUrl: string;
+    imageUrl?: string;
     title?: string;
     subtitle?: string;
     description?: string;
 } & HTMLAttributes<HTMLDivElement>;
 
-const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, subtitle, description, ...attrs }) => {
+const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, description, ...attrs }) => {
     return (
         <CardContainer {...attrs}>
             <ImageContainer>
@@ -92,9 +95,6 @@ const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, s
                     {title}
                 </Title>
                 <Text size="b2" color="secondary">
-                    {subtitle}
-                </Text>
-                <Text size="b2" color="secondary">
                     {description}
                 </Text>
             </Content>
@@ -103,23 +103,25 @@ const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, s
 };
 
 type BusinessCardsFeedProps = {
-    businesses: { id: string; name: string; banner: string; organizationName: string; description?: string }[];
+    stores?: Store[];
 };
 
-export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ businesses }) => {
+export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ stores }) => {
     const { setMode, setStep, resetStore } = useBusinessEditorStore();
     const navigate = useNavigate();
 
     const handleClickAddCard = () => {
         resetStore();
         setMode('add');
-        setStep(StepBusinessEditor.PERSONAL_INFO);
+        setStep(StepBusinessEditor.BUSINESS_INFO);
         navigate(RoutesCreator.BUSINESS_EDITOR);
     };
 
-    const handleClickCardManage = () => {
-        setMode('edit');
-        navigate(RoutesCreator.BUSINESS_MANAGEMENT);
+    const getHandleClickCardManage = (storeId: string) => {
+        return () => {
+            setMode('edit');
+            navigate(RoutesCreator.BUSINESS_MANAGEMENT, { state: { storeId } });
+        };
     };
 
     return (
@@ -132,14 +134,13 @@ export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ b
                     </Title>
                 </AddCardContent>
             </AddCard>
-            {businesses.map(({ id, banner, name, organizationName, description }) => (
+            {stores?.map(({ id, bannerUrl, name, description }) => (
                 <BusinessCard
                     key={id}
-                    imageUrl={banner}
+                    imageUrl={bannerUrl}
                     title={name}
-                    subtitle={organizationName}
                     description={description}
-                    onClick={handleClickCardManage}
+                    onClick={getHandleClickCardManage(id)}
                 />
             ))}
         </FeedContainer>

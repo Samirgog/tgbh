@@ -26,6 +26,7 @@ const Card = styled.div<{ $theme?: ConsumerTheme }>`
     flex: 1 1 auto;
     background: ${({ $theme }) => $theme?.colors?.cardBackground ?? '#fcf0f4'};
     border: 1px solid ${({ $theme }) => $theme?.colors?.cardBorder ?? '#d8c2c0'};
+    transition: transform 0.05s;
 `;
 
 type CardProps = HTMLAttributes<HTMLDivElement>;

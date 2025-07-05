@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 
-import { StepBusinessEditor } from '@/Enums';
-import { PersonalInfo } from '@/Models/Business';
+import { StepBusinessEditor, UserRole } from '@/Enums';
 import { Catalog, Category, Product } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
+import { PersonalInfo, User } from '@/Models/User';
 import { consumerTheme } from '@/Styles/theme';
 
 type BusinessInfo = {
@@ -24,6 +24,7 @@ type ReceiveInfo = {
 type BusinessEditorStore = {
     mode: 'add' | 'edit';
     step: StepBusinessEditor;
+    user: User;
     stepHistory: StepBusinessEditor[];
     personalInfo: PersonalInfo;
     businessInfo: BusinessInfo;
@@ -31,6 +32,8 @@ type BusinessEditorStore = {
     receiveInfo: ReceiveInfo;
     catalog: Catalog;
     theme: ConsumerTheme;
+
+    setUser: (user: User) => void;
 
     setMode: (mode: 'add' | 'edit') => void;
     setStep: (step: StepBusinessEditor) => void;
@@ -57,6 +60,7 @@ type BusinessEditorStore = {
 
 const initialState: Omit<
     BusinessEditorStore,
+    | 'setUser'
     | 'setMode'
     | 'setStep'
     | 'updatePersonalInfo'
@@ -75,8 +79,9 @@ const initialState: Omit<
     | 'goBack'
 > = {
     mode: 'add',
-    step: StepBusinessEditor.PERSONAL_INFO,
-    stepHistory: [StepBusinessEditor.PERSONAL_INFO],
+    step: StepBusinessEditor.BUSINESS_INFO,
+    user: { telegramId: '', id: '', role: '' as unknown as UserRole },
+    stepHistory: [StepBusinessEditor.BUSINESS_INFO],
     personalInfo: {
         firstName: '',
         lastName: '',
@@ -128,6 +133,9 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set, get) => 
             });
         }
     },
+
+    setUser: (user) => set({ user }),
+
     updatePersonalInfo: (data) => set((state) => ({ personalInfo: { ...state.personalInfo, ...data } })),
     updateBusinessInfo: (data) => set((state) => ({ businessInfo: { ...state.businessInfo, ...data } })),
     updatePaymentInfo: (data) => set((state) => ({ paymentInfo: { ...state.paymentInfo, ...data } })),
@@ -190,5 +198,5 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set, get) => 
 
     updateTheme: (data) => set((state) => ({ theme: { ...state.theme, ...data } })),
 
-    resetStore: () => set(initialState),
+    resetStore: () => set(({ user }) => ({ ...initialState, user })),
 }));

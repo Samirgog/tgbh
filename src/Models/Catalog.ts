@@ -3,7 +3,7 @@ export type Price = {
     currency: string;
 };
 
-export type Parameter = { text: string; price?: Price };
+export type Parameter = { text: string; id?: string; price?: Price };
 
 export type Product = {
     id: string;
@@ -24,4 +24,15 @@ export type Category = {
 
 export type Catalog = {
     categories: Category[];
+};
+
+export type CartItem = {
+    product: Product;
+    quantity: number;
+    parameter?: Parameter;
+};
+
+export type Address = {
+    value: string;
+    coords?: [number, number];
 };

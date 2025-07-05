@@ -7,7 +7,6 @@ import { Button } from '@/Components/@ui-kit/Button';
 import { MultiSelect } from '@/Components/@ui-kit/MultiSelect';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { PaymentCondition, PaymentType, StepBusinessEditor } from '@/Enums';
-import { useTelegramBackButton } from '@/Hooks/useTelegramBackButton';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`

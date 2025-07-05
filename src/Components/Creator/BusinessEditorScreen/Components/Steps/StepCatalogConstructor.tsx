@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useCreateStore } from '@/api/hooks/useCreateStore';
 import { Button } from '@/Components/@ui-kit/Button';
 import { Title } from '@/Components/@ui-kit/Typography';
 import { CatalogSection } from '@/Components/Common/CatalogSection';
@@ -14,6 +15,7 @@ import { Toolbar } from '@/Components/Creator/BusinessEditorScreen/Components/To
 import { useControlCategory } from '@/Components/Creator/BusinessEditorScreen/Hooks';
 import { useControlProduct } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlProduct';
 import { useControlThemeSettings } from '@/Components/Creator/BusinessEditorScreen/Hooks/useControlThemeSettings';
+import { RUBLE_SYMBOL } from '@/Consts';
 import { RoutesCreator, StepBusinessEditor } from '@/Enums';
 import { Category, Product } from '@/Models/Catalog';
 import { ConsumerTheme } from '@/Models/Theme';
@@ -31,7 +33,6 @@ const Header = styled.div`
 const Body = styled.div`
     display: flex;
     flex-direction: column;
-    //height: 100%;
     gap: ${({ theme }) => theme.spacing(2)};
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
@@ -83,10 +84,13 @@ const AddButton = styled.button`
 
 export const StepCatalogConstructor: FunctionComponent = () => {
     const navigate = useNavigate();
+    const { createStore, isPending } = useCreateStore();
 
     const {
         catalog,
         businessInfo,
+        paymentInfo,
+        receiveInfo,
         mode,
         theme,
         updateCatalog,
@@ -96,11 +100,14 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         updateProduct,
         updateTheme,
         setStep,
+        user,
     } = useBusinessEditorStore(
         useShallow(
             ({
                 catalog,
                 businessInfo,
+                paymentInfo,
+                receiveInfo,
                 mode,
                 theme,
                 updateCatalog,
@@ -110,9 +117,12 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 updateProduct,
                 updateTheme,
                 setStep,
+                user,
             }) => ({
                 catalog,
                 businessInfo,
+                paymentInfo,
+                receiveInfo,
                 mode,
                 theme,
                 updateCatalog,
@@ -122,6 +132,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 updateProduct,
                 updateTheme,
                 setStep,
+                user,
             }),
         ),
     );
@@ -232,13 +243,76 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         });
     };
 
-    const handlePublish = () => {
-        setStep(StepBusinessEditor.PERSONAL_INFO);
-        navigate(RoutesCreator.MAIN);
+    const handlePublish = async () => {
+        // setStep(StepBusinessEditor.BUSINESS_INFO);
+        // navigate(RoutesCreator.MAIN);
+        const createdStore = await createStore({
+            ownerId: user.id,
+            data: {
+                paymentMethods: paymentInfo.types?.map((type) => ({ type })),
+                paymentConditions: paymentInfo.conditions?.map((condition) => ({ condition })),
+                deliveryMethods: receiveInfo.ways?.map((receiveWay) => ({ receiveWay })),
+                name: businessInfo?.name,
+                description: businessInfo?.description,
+                bannerUrl: businessInfo?.banner?.url,
+                bannerName: businessInfo?.banner?.name,
+                categories: categories?.map((category) => ({
+                    name: category.name,
+                    priority: category.priority,
+                    imageName: category.image?.name ?? '',
+                    imageUrl: category.image?.url ?? '',
+                    products: category.products?.map((product) => ({
+                        name: product.name,
+                        description: product.description,
+                        priceAmount: Number(product.price?.amount),
+                        // priceCurrency: product.price?.currency ?? RUBLE_SYMBOL,
+                        imageUrl: product.image?.url,
+                        imageName: product.image?.name,
+                        parameters: product.parameters?.length
+                            ? product.parameters?.map((parameter) => ({
+                                  text: parameter.text,
+                                  priceAmount: Number(parameter.price?.amount),
+                              }))
+                            : undefined,
+                    })),
+                })),
+            },
+        });
+
+        console.log({ createdStore });
     };
 
-    const handleSave = () => {
-        navigate(-1);
+    const handleSave = async () => {
+        // navigate(-1);
+        // const createdStore = await createStore({
+        //     ownerId: user.id,
+        //     data: {
+        //         name: businessInfo?.name,
+        //         description: businessInfo?.description,
+        //         bannerUrl: businessInfo?.banner?.url,
+        //         bannerName: businessInfo?.banner?.name,
+        //         categories: categories?.map((category) => ({
+        //             name: category.name,
+        //             priority: category.priority,
+        //             imageName: category.image?.name,
+        //             imageUrl: category.image?.url,
+        //             products: category.products?.map((product) => ({
+        //                 name: product.name,
+        //                 description: product.description,
+        //                 priceAmount: product.price?.amount ?? 0,
+        //                 priceCurrency: product.price?.currency,
+        //                 imageUrl: product.image?.url,
+        //                 imageName: product.image?.name,
+        //                 parameters: product.parameters?.map((parameter) => ({
+        //                     text: parameter.text,
+        //                     priceAmount: parameter.price?.amount ?? 0,
+        //                 })),
+        //             })),
+        //         })),
+        //     },
+        // });
+        //
+        // console.log({ createdStore });
     };
 
     return (

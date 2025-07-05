@@ -7,7 +7,6 @@ import {
     StepBusinessInfo,
     StepCatalogConstructor,
     StepPaymentInfo,
-    StepPersonalInfo,
     StepReceiveInfo,
 } from '@/Components/Creator/BusinessEditorScreen/Components';
 import { ConsumerThemeProvider } from '@/ConsumerThemeProvider';
@@ -38,7 +37,7 @@ export const BusinessEditorScreen: FunctionComponent = () => {
     const navigate = useNavigate();
 
     useTelegramBackButton(() => {
-        if (step === StepBusinessEditor.PERSONAL_INFO || mode === 'edit') {
+        if (step === StepBusinessEditor.BUSINESS_INFO || mode === 'edit') {
             navigate(-1);
         } else {
             goBack();
@@ -58,7 +57,6 @@ export const BusinessEditorScreen: FunctionComponent = () => {
                     >
                         {
                             {
-                                [StepBusinessEditor.PERSONAL_INFO]: <StepPersonalInfo />,
                                 [StepBusinessEditor.BUSINESS_INFO]: <StepBusinessInfo />,
                                 [StepBusinessEditor.PAYMENT_INFO]: <StepPaymentInfo />,
                                 [StepBusinessEditor.RECEIVE_INFO]: <StepReceiveInfo />,
