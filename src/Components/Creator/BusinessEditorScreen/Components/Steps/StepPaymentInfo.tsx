@@ -2,11 +2,13 @@ import { FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useShallow } from 'zustand/react/shallow';
 
+import { useUpdateStore } from '@/api/hooks/useUpdateStore';
 import { Button } from '@/Components/@ui-kit/Button';
 import { MultiSelect } from '@/Components/@ui-kit/MultiSelect';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
-import { PaymentCondition, PaymentType, StepBusinessEditor } from '@/Enums';
+import { PaymentCondition, StepBusinessEditor } from '@/Enums';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 const Form = styled.form`
@@ -35,11 +37,6 @@ const Container = styled.div`
     gap: ${({ theme }) => theme.spacing(2)};
 `;
 
-const ButtonWrapper = styled.div`
-    display: flex;
-    align-self: center;
-`;
-
 type PaymentInfoForm = {
     types: string[];
     conditions: string[];
@@ -47,20 +44,20 @@ type PaymentInfoForm = {
 
 type Option = { label: string; value: string };
 
-const OPTIONS_PAYMENT_TYPE: Option[] = [
-    { label: 'СБП', value: PaymentType.SBP },
-    { label: 'Картой онлайн', value: PaymentType.CARD },
-    { label: 'Наличные', value: PaymentType.CASH },
-];
+// const OPTIONS_PAYMENT_TYPE: Option[] = [
+//     { label: 'СБП', value: PaymentType.SBP },
+//     { label: 'Картой онлайн', value: PaymentType.CARD },
+//     { label: 'Наличные', value: PaymentType.CASH },
+// ];
 
 const OPTIONS_PAYMENT_CONDITIONS: Option[] = [
     { label: 'Предоплата', value: PaymentCondition.PREPAYMENT },
     { label: 'При получении', value: PaymentCondition.UPON_RECEIPT },
 ];
 
-const getPaymentTypeValues = (types: string[]) => {
-    return OPTIONS_PAYMENT_TYPE.filter((type) => types.includes(type.value as PaymentType));
-};
+// const getPaymentTypeValues = (types: string[]) => {
+//     return OPTIONS_PAYMENT_TYPE.filter((type) => types.includes(type.value as PaymentType));
+// };
 
 const getPaymentConditionValues = (types: string[]) => {
     return OPTIONS_PAYMENT_CONDITIONS.filter((type) => types.includes(type.value as PaymentCondition));
@@ -68,7 +65,16 @@ const getPaymentConditionValues = (types: string[]) => {
 
 export const StepPaymentInfo: FunctionComponent = () => {
     const navigate = useNavigate();
-    const { paymentInfo, updatePaymentInfo, mode, setStep } = useBusinessEditorStore();
+    const { paymentInfo, updatePaymentInfo, mode, setStep, editingStoreId } = useBusinessEditorStore(
+        useShallow(({ paymentInfo, updatePaymentInfo, mode, setStep, editingStoreId }) => ({
+            paymentInfo,
+            updatePaymentInfo,
+            mode,
+            setStep,
+            editingStoreId,
+        })),
+    );
+    const { updateStore } = useUpdateStore();
 
     const {
         control,
@@ -78,11 +84,24 @@ export const StepPaymentInfo: FunctionComponent = () => {
         defaultValues: paymentInfo,
     });
 
-    const onSubmit = (data: PaymentInfoForm) => {
+    const onSubmit = async (data: PaymentInfoForm) => {
         updatePaymentInfo(data);
 
         if (mode === 'edit') {
-            navigate(-1);
+            try {
+                const updatedStore = await updateStore({
+                    id: editingStoreId,
+                    data: {
+                        paymentConditions: data?.conditions?.map((condition) => ({ condition })),
+                    },
+                });
+
+                console.log({ updatedStore });
+
+                navigate(-1);
+            } catch (error) {
+                console.log('update payment info error: ', error);
+            }
 
             return;
         }
@@ -93,27 +112,27 @@ export const StepPaymentInfo: FunctionComponent = () => {
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <FormInner>
-                <Container>
-                    <TitleWrapper>
-                        <Title size="h5" weight="medium">
-                            Выберите способы оплаты*
-                        </Title>
-                        <Text size="b3" color="secondary">
-                            * При оформлении заказа клиенту будут предложены выбранные Вами способы оплаты
-                        </Text>
-                    </TitleWrapper>
-                    <Controller
-                        control={control}
-                        name="types"
-                        render={({ field: { value, onChange } }) => (
-                            <MultiSelect
-                                options={OPTIONS_PAYMENT_TYPE}
-                                values={getPaymentTypeValues(value)}
-                                onSelect={onChange}
-                            />
-                        )}
-                    />
-                </Container>
+                {/*<Container>*/}
+                {/*    <TitleWrapper>*/}
+                {/*        <Title size="h5" weight="medium">*/}
+                {/*            Выберите способы оплаты**/}
+                {/*        </Title>*/}
+                {/*        <Text size="b3" color="secondary">*/}
+                {/*            * При оформлении заказа клиенту будут предложены выбранные Вами способы оплаты*/}
+                {/*        </Text>*/}
+                {/*    </TitleWrapper>*/}
+                {/*    <Controller*/}
+                {/*        control={control}*/}
+                {/*        name="types"*/}
+                {/*        render={({ field: { value, onChange } }) => (*/}
+                {/*            <MultiSelect*/}
+                {/*                options={OPTIONS_PAYMENT_TYPE}*/}
+                {/*                values={getPaymentTypeValues(value)}*/}
+                {/*                onSelect={onChange}*/}
+                {/*            />*/}
+                {/*        )}*/}
+                {/*    />*/}
+                {/*</Container>*/}
                 <Container>
                     <TitleWrapper>
                         <Title size="h5" weight="medium">
@@ -136,11 +155,9 @@ export const StepPaymentInfo: FunctionComponent = () => {
                     />
                 </Container>
             </FormInner>
-            <ButtonWrapper>
-                <Button type="submit" disabled={!isValid}>
-                    {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
-                </Button>
-            </ButtonWrapper>
+            <Button type="submit" disabled={!isValid}>
+                {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
+            </Button>
         </Form>
     );
 };

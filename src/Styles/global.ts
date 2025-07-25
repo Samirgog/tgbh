@@ -12,9 +12,9 @@ export const GlobalStyles = createGlobalStyle`
     }
 
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #fff;
-      color: #1f2937;
+      font-family: 'Roboto', -apple-system, sans-serif;
+        background-color: ${({ theme }: { theme: Record<string, any> }) => theme?.colors?.background};
+        color: ${({ theme }: { theme: Record<string, any> }) => theme?.colors?.textPrimary};
       height: 100vh;
         
         #root {

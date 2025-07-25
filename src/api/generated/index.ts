@@ -45,9 +45,9 @@ export type TCategory = {
 };
 
 export type TCategoryInput = {
-  imageName: Scalars['String']['input'];
-  imageUrl: Scalars['String']['input'];
-  name: Scalars['String']['input'];
+  imageName?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
   priority?: InputMaybe<Scalars['Float']['input']>;
   products?: InputMaybe<Array<TProductInput>>;
 };
@@ -312,6 +312,7 @@ export type TProduct = {
 
 export type TProductInput = {
   description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
   imageName?: InputMaybe<Scalars['String']['input']>;
   imageUrl?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -618,15 +619,6 @@ export const FindByOwnerIdDocument = /*#__PURE__*/ `
     bannerUrl
     bannerName
     status
-    categories {
-      name
-      priority
-      products {
-        name
-        priceAmount
-        description
-      }
-    }
   }
 }
     `;
@@ -668,6 +660,7 @@ export const FindWithDetailsDocument = /*#__PURE__*/ `
       imageUrl
       imageName
       products {
+        id
         name
         parameters {
           id
@@ -717,6 +710,69 @@ useFindWithDetailsQuery.getKey = (variables: TFindWithDetailsQueryVariables) => 
 
 useFindWithDetailsQuery.fetcher = (client: GraphQLClient, variables: TFindWithDetailsQueryVariables, headers?: RequestInit['headers']) => fetcher<TFindWithDetailsQuery, TFindWithDetailsQueryVariables>(client, FindWithDetailsDocument, variables, headers);
 
+export const UpdateStoreDocument = /*#__PURE__*/ `
+    mutation UpdateStore($id: ID!, $data: UpdateStoreInput!) {
+  updateStore(id: $id, data: $data) {
+    id
+    name
+    description
+    status
+    bannerUrl
+    bannerName
+    categories {
+      id
+      name
+      priority
+      imageUrl
+      imageName
+      products {
+        id
+        name
+        parameters {
+          id
+          priceAmount
+          text
+        }
+        priceAmount
+        priceCurrency
+        description
+        imageUrl
+        imageName
+        isActive
+      }
+    }
+    paymentMethods {
+      type
+    }
+    paymentConditions {
+      condition
+    }
+    deliveryMethods {
+      receiveWay
+      details
+    }
+  }
+}
+    `;
+
+export const useUpdateStoreMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<TUpdateStoreMutation, TError, TUpdateStoreMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<TUpdateStoreMutation, TError, TUpdateStoreMutationVariables, TContext>(
+      ['UpdateStore'],
+      (variables?: TUpdateStoreMutationVariables) => fetcher<TUpdateStoreMutation, TUpdateStoreMutationVariables>(client, UpdateStoreDocument, variables, headers)(),
+      options
+    )};
+
+
+useUpdateStoreMutation.fetcher = (client: GraphQLClient, variables: TUpdateStoreMutationVariables, headers?: RequestInit['headers']) => fetcher<TUpdateStoreMutation, TUpdateStoreMutationVariables>(client, UpdateStoreDocument, variables, headers);
+
 export type TAuthMutationVariables = Exact<{
   input: TAuthInput;
 }>;
@@ -737,11 +793,19 @@ export type TFindByOwnerIdQueryVariables = Exact<{
 }>;
 
 
-export type TFindByOwnerIdQuery = { storesByOwner: Array<{ id: string, name: string, description: string, bannerUrl?: string | null, bannerName?: string | null, status: TStoreStatus, categories?: Array<{ name: string, priority: number, products?: Array<{ name: string, priceAmount: number, description?: string | null }> | null }> | null }> };
+export type TFindByOwnerIdQuery = { storesByOwner: Array<{ id: string, name: string, description: string, bannerUrl?: string | null, bannerName?: string | null, status: TStoreStatus }> };
 
 export type TFindWithDetailsQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type TFindWithDetailsQuery = { storeWithDetails: { id: string, name: string, description: string, status: TStoreStatus, bannerUrl?: string | null, bannerName?: string | null, categories?: Array<{ id: string, name: string, priority: number, imageUrl?: string | null, imageName?: string | null, products?: Array<{ name: string, priceAmount: number, priceCurrency: string, description?: string | null, imageUrl?: string | null, imageName?: string | null, isActive: boolean, parameters: Array<{ id: string, priceAmount?: number | null, text: string }> }> | null }> | null, paymentMethods: Array<{ type: string }>, paymentConditions: Array<{ condition: string }>, deliveryMethods: Array<{ receiveWay: string, details?: string | null }> } };
+export type TFindWithDetailsQuery = { storeWithDetails: { id: string, name: string, description: string, status: TStoreStatus, bannerUrl?: string | null, bannerName?: string | null, categories?: Array<{ id: string, name: string, priority: number, imageUrl?: string | null, imageName?: string | null, products?: Array<{ id: string, name: string, priceAmount: number, priceCurrency: string, description?: string | null, imageUrl?: string | null, imageName?: string | null, isActive: boolean, parameters: Array<{ id: string, priceAmount?: number | null, text: string }> }> | null }> | null, paymentMethods: Array<{ type: string }>, paymentConditions: Array<{ condition: string }>, deliveryMethods: Array<{ receiveWay: string, details?: string | null }> } };
+
+export type TUpdateStoreMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  data: TUpdateStoreInput;
+}>;
+
+
+export type TUpdateStoreMutation = { updateStore: { id: string, name: string, description: string, status: TStoreStatus, bannerUrl?: string | null, bannerName?: string | null, categories?: Array<{ id: string, name: string, priority: number, imageUrl?: string | null, imageName?: string | null, products?: Array<{ id: string, name: string, priceAmount: number, priceCurrency: string, description?: string | null, imageUrl?: string | null, imageName?: string | null, isActive: boolean, parameters: Array<{ id: string, priceAmount?: number | null, text: string }> }> | null }> | null, paymentMethods: Array<{ type: string }>, paymentConditions: Array<{ condition: string }>, deliveryMethods: Array<{ receiveWay: string, details?: string | null }> } };

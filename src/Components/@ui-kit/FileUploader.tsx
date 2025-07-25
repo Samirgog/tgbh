@@ -10,7 +10,7 @@ const Container = styled.div`
     align-items: center;
     gap: ${({ theme }) => theme.spacing(1)};
     cursor: pointer;
-    color: #007aff;
+    color: ${({ theme }) => theme.colors.link.primary};
     font-size: 16px;
     padding: 8px 0;
 `;

@@ -27,11 +27,6 @@ const InputsWrapper = styled.div`
     gap: ${({ theme }) => theme.spacing(2)};
 `;
 
-const ButtonWrapper = styled.div`
-    display: flex;
-    align-self: center;
-`;
-
 type PersonalInfoForm = {
     firstName: string;
     lastName: string;
@@ -115,9 +110,7 @@ export const StepPersonalInfo: FunctionComponent = () => {
                     />
                 </InputsWrapper>
             </FormInner>
-            <ButtonWrapper>
-                <Button type="submit">Продолжить</Button>
-            </ButtonWrapper>
+            <Button type="submit">Продолжить</Button>
         </Form>
     );
 };

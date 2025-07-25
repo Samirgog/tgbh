@@ -26,6 +26,7 @@ type BusinessEditorStore = {
     step: StepBusinessEditor;
     user: User;
     stepHistory: StepBusinessEditor[];
+    editingStoreId: string;
     personalInfo: PersonalInfo;
     businessInfo: BusinessInfo;
     paymentInfo: PaymentInfo;
@@ -38,6 +39,8 @@ type BusinessEditorStore = {
     setMode: (mode: 'add' | 'edit') => void;
     setStep: (step: StepBusinessEditor) => void;
     goBack: () => void;
+
+    setEditingStoreId: (id: string) => void;
 
     updatePersonalInfo: (data: Partial<PersonalInfo>) => void;
     updateBusinessInfo: (data: Partial<BusinessInfo>) => void;
@@ -77,11 +80,13 @@ const initialState: Omit<
     | 'updateTheme'
     | 'resetStore'
     | 'goBack'
+    | 'setEditingStoreId'
 > = {
     mode: 'add',
     step: StepBusinessEditor.BUSINESS_INFO,
     user: { telegramId: '', id: '', role: '' as unknown as UserRole },
     stepHistory: [StepBusinessEditor.BUSINESS_INFO],
+    editingStoreId: '',
     personalInfo: {
         firstName: '',
         lastName: '',
@@ -135,6 +140,8 @@ export const useBusinessEditorStore = create<BusinessEditorStore>((set, get) => 
     },
 
     setUser: (user) => set({ user }),
+
+    setEditingStoreId: (id) => set({ editingStoreId: id }),
 
     updatePersonalInfo: (data) => set((state) => ({ personalInfo: { ...state.personalInfo, ...data } })),
     updateBusinessInfo: (data) => set((state) => ({ businessInfo: { ...state.businessInfo, ...data } })),

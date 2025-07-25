@@ -21,9 +21,9 @@ type Category {
 }
 
 input CategoryInput {
-  imageName: String!
-  imageUrl: String!
-  name: String!
+  imageName: String
+  imageUrl: String
+  name: String
   priority: Float
   products: [ProductInput!]
 }
@@ -230,6 +230,7 @@ type Product {
 
 input ProductInput {
   description: String
+  id: ID
   imageName: String
   imageUrl: String
   isActive: Boolean

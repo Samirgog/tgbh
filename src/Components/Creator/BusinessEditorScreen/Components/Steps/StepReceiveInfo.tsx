@@ -28,11 +28,6 @@ const Container = styled.div`
     gap: ${({ theme }) => theme.spacing(2)};
 `;
 
-const ButtonWrapper = styled.div`
-    display: flex;
-    align-self: center;
-`;
-
 type ReceiveInfoForm = {
     ways: string[];
 };
@@ -95,11 +90,9 @@ export const StepReceiveInfo: FunctionComponent = () => {
                     )}
                 />
             </Container>
-            <ButtonWrapper>
-                <Button type="submit" disabled={!isValid}>
-                    {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
-                </Button>
-            </ButtonWrapper>
+            <Button type="submit" disabled={!isValid}>
+                {mode === 'edit' ? 'Сохранить' : 'Продолжить'}
+            </Button>
         </Form>
     );
 };

@@ -1,26 +1,18 @@
 import { FunctionComponent, HTMLAttributes } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useShallow } from 'zustand/react/shallow';
 
-import { useStoreById } from '@/api/hooks/useStoreById';
+import { Button } from '@/Components/@ui-kit';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
 import { RoutesCreator, StepBusinessEditor } from '@/Enums';
+import { useURLResourceLoadControl } from '@/Hooks/useURLResourceLoadControl';
 import { Store } from '@/Models/User';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
-
-const AddIcon = () => (
-    <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-            d="M29 0.25C13.1156 0.25 0.25 13.1156 0.25 29C0.25 44.8844 13.1156 57.75 29 57.75C44.8844 57.75 57.75 44.8844 57.75 29C57.75 13.1156 44.8844 0.25 29 0.25ZM43.375 31.875H31.875V43.375H26.125V31.875H14.625V26.125H26.125V14.625H31.875V26.125H43.375V31.875Z"
-            fill="black"
-        />
-    </svg>
-);
 
 const FeedContainer = styled.div`
     display: flex;
     flex-direction: column;
-    overflow-x: auto;
     gap: ${({ theme }) => theme.spacing(1)};
     padding: 16px;
     margin: -16px;
@@ -32,41 +24,25 @@ const FeedContainer = styled.div`
 
 const CardContainer = styled.div`
     min-width: 250px;
-    height: 308px;
-    background: white;
+    background: ${({ theme }) => theme.colors.backgroundSecondary};
     border-radius: 24px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     cursor: pointer;
-`;
-
-const AddCard = styled(CardContainer)`
-    min-width: 138px;
-    justify-content: center;
-    align-items: center;
-`;
-
-const AddCardContent = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: ${({ theme }) => theme.spacing(1)};
+    border: 1px solid #aaa;
+    padding: 12px;
 `;
 
 const ImageContainer = styled.div`
     width: 100%;
-    height: 218px;
-    background: #f0f0f0;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    height: 148px;
+    padding: 10px;
 
     img {
         width: 100%;
-        height: 218px;
-        border-top-left-radius: 24px;
-        border-top-right-radius: 24px;
+        height: 148px;
+        border: 24px;
     }
 `;
 
@@ -85,11 +61,15 @@ type BusinessCardProps = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const BusinessCard: FunctionComponent<BusinessCardProps> = ({ imageUrl, title, description, ...attrs }) => {
+    const { currentSrc, isLoadError, getHandlersForElement } = useURLResourceLoadControl({ src: imageUrl });
+
     return (
         <CardContainer {...attrs}>
-            <ImageContainer>
-                <img alt="" src={imageUrl} />
-            </ImageContainer>
+            {!isLoadError && (
+                <ImageContainer>
+                    <img alt="" src={currentSrc} {...getHandlersForElement()} />
+                </ImageContainer>
+            )}
             <Content>
                 <Title size="h6" weight="semibold">
                     {title}
@@ -107,18 +87,19 @@ type BusinessCardsFeedProps = {
 };
 
 export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ stores }) => {
-    const { setMode, setStep, resetStore } = useBusinessEditorStore();
+    const { setMode, setEditingStoreId } = useBusinessEditorStore(
+        useShallow(({ setMode, setStep, setEditingStoreId, resetStore }) => ({
+            setMode,
+            setStep,
+            setEditingStoreId,
+            resetStore,
+        })),
+    );
     const navigate = useNavigate();
-
-    const handleClickAddCard = () => {
-        resetStore();
-        setMode('add');
-        setStep(StepBusinessEditor.BUSINESS_INFO);
-        navigate(RoutesCreator.BUSINESS_EDITOR);
-    };
 
     const getHandleClickCardManage = (storeId: string) => {
         return () => {
+            setEditingStoreId(storeId);
             setMode('edit');
             navigate(RoutesCreator.BUSINESS_MANAGEMENT, { state: { storeId } });
         };
@@ -126,14 +107,6 @@ export const BusinessCardsFeed: FunctionComponent<BusinessCardsFeedProps> = ({ s
 
     return (
         <FeedContainer>
-            <AddCard onClick={handleClickAddCard}>
-                <AddCardContent>
-                    <AddIcon />
-                    <Title size="h6" weight="semibold">
-                        Добавить
-                    </Title>
-                </AddCardContent>
-            </AddCard>
             {stores?.map(({ id, bannerUrl, name, description }) => (
                 <BusinessCard
                     key={id}

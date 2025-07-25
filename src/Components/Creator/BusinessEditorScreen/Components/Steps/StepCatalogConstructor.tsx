@@ -1,10 +1,13 @@
+import Lottie from 'lottie-react';
 import { Plus } from 'lucide-react';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useCreateStore } from '@/api/hooks/useCreateStore';
+import { useUpdateStore } from '@/api/hooks/useUpdateStore';
+import shopCategoriesAnimation from '@/assets/shop_categories.json';
 import { Button } from '@/Components/@ui-kit/Button';
 import { Title } from '@/Components/@ui-kit/Typography';
 import { CatalogSection } from '@/Components/Common/CatalogSection';
@@ -33,13 +36,11 @@ const Header = styled.div`
 const Body = styled.div`
     display: flex;
     flex-direction: column;
+    height: 100%;
     gap: ${({ theme }) => theme.spacing(2)};
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
     border-top: 1px solid #ddd;
-    margin: 0 -16px;
+    margin: -16px -16px;
     padding: 16px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0 -4px 16px;
 `;
 
 const Container = styled.div`
@@ -82,9 +83,18 @@ const AddButton = styled.button`
     }
 `;
 
+const EmptyContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing(2)};
+    align-items: center;
+`;
+
 export const StepCatalogConstructor: FunctionComponent = () => {
     const navigate = useNavigate();
-    const { createStore, isPending } = useCreateStore();
+    const { createStore } = useCreateStore();
+    const { updateStore } = useUpdateStore();
+    const [newProductsIds] = useState<Set<string>>(new Set());
 
     const {
         catalog,
@@ -93,6 +103,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
         receiveInfo,
         mode,
         theme,
+        editingStoreId,
         updateCatalog,
         addCategory,
         updateCategory,
@@ -110,6 +121,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 receiveInfo,
                 mode,
                 theme,
+                editingStoreId,
                 updateCatalog,
                 addCategory,
                 updateCategory,
@@ -125,6 +137,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 receiveInfo,
                 mode,
                 theme,
+                editingStoreId,
                 updateCatalog,
                 addCategory,
                 updateCategory,
@@ -223,6 +236,7 @@ export const StepCatalogConstructor: FunctionComponent = () => {
 
     const handleSaveProduct = (nextProduct: Product) => {
         if (!product && productCategoryId) {
+            newProductsIds.add(nextProduct.id);
             addProductToCategory({ categoryId: productCategoryId, product: nextProduct });
 
             return;
@@ -244,75 +258,81 @@ export const StepCatalogConstructor: FunctionComponent = () => {
     };
 
     const handlePublish = async () => {
-        // setStep(StepBusinessEditor.BUSINESS_INFO);
-        // navigate(RoutesCreator.MAIN);
-        const createdStore = await createStore({
-            ownerId: user.id,
-            data: {
-                paymentMethods: paymentInfo.types?.map((type) => ({ type })),
-                paymentConditions: paymentInfo.conditions?.map((condition) => ({ condition })),
-                deliveryMethods: receiveInfo.ways?.map((receiveWay) => ({ receiveWay })),
-                name: businessInfo?.name,
-                description: businessInfo?.description,
-                bannerUrl: businessInfo?.banner?.url,
-                bannerName: businessInfo?.banner?.name,
-                categories: categories?.map((category) => ({
-                    name: category.name,
-                    priority: category.priority,
-                    imageName: category.image?.name ?? '',
-                    imageUrl: category.image?.url ?? '',
-                    products: category.products?.map((product) => ({
-                        name: product.name,
-                        description: product.description,
-                        priceAmount: Number(product.price?.amount),
-                        // priceCurrency: product.price?.currency ?? RUBLE_SYMBOL,
-                        imageUrl: product.image?.url,
-                        imageName: product.image?.name,
-                        parameters: product.parameters?.length
-                            ? product.parameters?.map((parameter) => ({
-                                  text: parameter.text,
-                                  priceAmount: Number(parameter.price?.amount),
-                              }))
-                            : undefined,
+        try {
+            await createStore({
+                ownerId: user.id,
+                data: {
+                    paymentMethods: paymentInfo.types?.map((type) => ({ type })),
+                    paymentConditions: paymentInfo.conditions?.map((condition) => ({ condition })),
+                    deliveryMethods: receiveInfo.ways?.map((receiveWay) => ({ receiveWay })),
+                    name: businessInfo?.name,
+                    description: businessInfo?.description,
+                    bannerUrl: businessInfo?.banner?.url,
+                    bannerName: businessInfo?.banner?.name,
+                    categories: categories?.map((category) => ({
+                        id: undefined as unknown as string,
+                        name: category.name,
+                        priority: category.priority,
+                        imageName: category.image?.name ?? '',
+                        imageUrl: category.image?.url ?? '',
+                        products: category.products?.map((product) => ({
+                            id: undefined as unknown as string,
+                            name: product.name,
+                            description: product.description,
+                            priceAmount: Number(product.price?.amount),
+                            imageUrl: product.image?.url,
+                            imageName: product.image?.name,
+                            parameters: product.parameters?.length
+                                ? product.parameters?.map((parameter) => ({
+                                      text: parameter.text,
+                                      priceAmount: Number(parameter.price?.amount),
+                                  }))
+                                : undefined,
+                        })),
                     })),
-                })),
-            },
-        });
+                },
+            });
 
-        console.log({ createdStore });
+            setStep(StepBusinessEditor.BUSINESS_INFO);
+            navigate(RoutesCreator.MAIN);
+        } catch (e) {
+            console.log('create store error: ', e);
+        }
     };
 
     const handleSave = async () => {
-        // navigate(-1);
-        // const createdStore = await createStore({
-        //     ownerId: user.id,
-        //     data: {
-        //         name: businessInfo?.name,
-        //         description: businessInfo?.description,
-        //         bannerUrl: businessInfo?.banner?.url,
-        //         bannerName: businessInfo?.banner?.name,
-        //         categories: categories?.map((category) => ({
-        //             name: category.name,
-        //             priority: category.priority,
-        //             imageName: category.image?.name,
-        //             imageUrl: category.image?.url,
-        //             products: category.products?.map((product) => ({
-        //                 name: product.name,
-        //                 description: product.description,
-        //                 priceAmount: product.price?.amount ?? 0,
-        //                 priceCurrency: product.price?.currency,
-        //                 imageUrl: product.image?.url,
-        //                 imageName: product.image?.name,
-        //                 parameters: product.parameters?.map((parameter) => ({
-        //                     text: parameter.text,
-        //                     priceAmount: parameter.price?.amount ?? 0,
-        //                 })),
-        //             })),
-        //         })),
-        //     },
-        // });
-        //
-        // console.log({ createdStore });
+        try {
+            await updateStore({
+                id: editingStoreId,
+                data: {
+                    categories: categories?.map((category) => ({
+                        id: category.id,
+                        name: category.name,
+                        priority: category.priority,
+                        imageName: category.image?.name,
+                        imageUrl: category.image?.url,
+                        products: category.products?.map((product) => ({
+                            id: newProductsIds.has(product.id) ? undefined : product.id,
+                            name: product.name,
+                            description: product.description,
+                            priceAmount: Number(product.price?.amount),
+                            imageUrl: product.image?.url,
+                            imageName: product.image?.name,
+                            parameters: product.parameters?.length
+                                ? product.parameters?.map((parameter) => ({
+                                      text: parameter.text,
+                                      priceAmount: Number(parameter.price?.amount),
+                                  }))
+                                : undefined,
+                        })),
+                    })),
+                },
+            });
+
+            navigate(-1);
+        } catch (e) {
+            console.log('update store error: ', e);
+        }
     };
 
     return (
@@ -335,46 +355,60 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 onSave={handleSaveTheme}
             />
             <Container>
-                <Header>
-                    <Button onClick={mode === 'edit' ? handleSave : handlePublish} color="success">
-                        {mode === 'edit' ? 'Сохранить' : 'Опубликовать'}
-                    </Button>
-                    <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} onSelectPreview={handlePreview} />
-                </Header>
+                {/*<Header>*/}
+                {/*    <Button onClick={mode === 'edit' ? handleSave : handlePublish}>*/}
+                {/*        {mode === 'edit' ? 'Сохранить' : 'Опубликовать'}*/}
+                {/*    </Button>*/}
+                {/*    <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} onSelectPreview={handlePreview} />*/}
+                {/*</Header>*/}
                 <Body>
-                    <CatalogSection>
-                        <SectionHeader>
-                            <Title size="h3" weight="semibold">
-                                Категории
-                            </Title>
-                            <AddButton onClick={handleClickAddCategory}>
-                                <Plus color="white" size={24} />
-                            </AddButton>
-                        </SectionHeader>
-                        <DroppableCategories
-                            categories={categories}
-                            moveCategory={handleMoveCategories}
-                            onEdit={openCategoryDrawer}
-                        />
-                    </CatalogSection>
-                    {categories?.map((category) => (
-                        <CatalogSection key={category.id}>
-                            <SectionHeader>
-                                <Title size="h5" weight="bold" color="accent">
-                                    {category.name}
-                                </Title>
-                                <AddButton onClick={getHandleClickAddProduct(category.id)}>
-                                    <Plus color="white" size={24} />
-                                </AddButton>
-                            </SectionHeader>
-                            <DroppableProducts
-                                products={category.products ?? []}
-                                categoryId={category.id}
-                                moveProduct={handleMoveProduct}
-                                onEdit={getHandleClickEditProduct(category.id)}
-                            />
-                        </CatalogSection>
-                    ))}
+                    {categories?.length > 0 ? (
+                        <>
+                            <CatalogSection>
+                                <SectionHeader>
+                                    <Title size="h3" weight="semibold">
+                                        Категории
+                                    </Title>
+                                    <AddButton onClick={handleClickAddCategory}>
+                                        <Plus color="white" size={24} />
+                                    </AddButton>
+                                </SectionHeader>
+                                <DroppableCategories
+                                    categories={categories}
+                                    moveCategory={handleMoveCategories}
+                                    onEdit={openCategoryDrawer}
+                                />
+                            </CatalogSection>
+                            {categories?.map((category) => (
+                                <CatalogSection key={category.id}>
+                                    <SectionHeader>
+                                        <Title size="h5" weight="bold" color="accent">
+                                            {category.name}
+                                        </Title>
+                                        <AddButton onClick={getHandleClickAddProduct(category.id)}>
+                                            <Plus color="white" size={24} />
+                                        </AddButton>
+                                    </SectionHeader>
+                                    <DroppableProducts
+                                        products={category.products ?? []}
+                                        categoryId={category.id}
+                                        moveProduct={handleMoveProduct}
+                                        onEdit={getHandleClickEditProduct(category.id)}
+                                    />
+                                </CatalogSection>
+                            ))}
+                        </>
+                    ) : (
+                        <EmptyContainer>
+                            <div>
+                                <Lottie animationData={shopCategoriesAnimation} loop={true} />
+                            </div>
+                            <Title size="h4">У вас пока нет категорий</Title>
+                            <Button onClick={handleClickAddCategory} style={{ marginTop: 'auto', width: '100%' }}>
+                                Создать
+                            </Button>
+                        </EmptyContainer>
+                    )}
                 </Body>
             </Container>
             <DndPreview />

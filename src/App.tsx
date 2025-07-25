@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider, useTheme } from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useAuth } from '@/api/hooks/useAuth';
@@ -9,12 +9,13 @@ import { Consumer } from '@/Components/Consumer';
 import { Creator } from '@/Components/Creator';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 import { GlobalStyles } from '@/Styles/global';
-import { theme } from '@/Styles/theme';
+import { theme as defaultTheme } from '@/Styles/theme';
 
 function App() {
     const { isPending: isLoadingAuth, isAuthenticated } = useAuth();
+    const [theme, setTheme] = useState(defaultTheme);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const tg = window.Telegram?.WebApp;
 
         if (tg) {
@@ -22,6 +23,26 @@ function App() {
             tg.expand();
             tg.isVerticalSwipesEnabled = false;
             const themeParams = tg.themeParams;
+
+            setTheme({
+                ...defaultTheme,
+                colors: {
+                    ...defaultTheme.colors,
+                    background: themeParams.bg_color ?? defaultTheme.colors.background,
+                    backgroundSecondary: themeParams.secondary_bg_color ?? defaultTheme.colors.backgroundSecondary,
+                    textPrimary: themeParams.text_color ?? defaultTheme.colors.textPrimary,
+                    textSecondary: themeParams.subtitle_text_color ?? defaultTheme.colors.textSecondary,
+                    button: {
+                        primary: themeParams.button_color ?? defaultTheme.colors.button.primary,
+                    },
+                    link: {
+                        primary: themeParams.link_color ?? defaultTheme.colors.link.primary,
+                    },
+                    input: {
+                        background: themeParams.secondary_bg_color ?? defaultTheme.colors.input.background,
+                    },
+                },
+            });
 
             console.log('🌈 Тема пользователя:', themeParams);
         }
@@ -34,7 +55,7 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-                <GlobalStyles />
+                <GlobalStyles theme={theme} />
                 <Creator />
                 {/*<Consumer />*/}
             </DndProvider>

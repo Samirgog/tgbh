@@ -4,6 +4,7 @@ export const theme = {
         secondary: '#FBBF24',
         error: '#e53935',
         background: '#F3F4F6',
+        backgroundSecondary: '#fff',
         text: '#1F2937',
         textPrimary: '#000',
         textSecondary: '#6B7280',
@@ -13,6 +14,9 @@ export const theme = {
             background: '#fff',
         },
         button: {
+            primary: '#007aff',
+        },
+        link: {
             primary: '#007aff',
         },
         editor: {

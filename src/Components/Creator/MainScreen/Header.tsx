@@ -2,20 +2,21 @@ import { User } from 'lucide-react';
 import { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
-import { Title } from '@/Components/@ui-kit';
+import { Text, Title } from '@/Components/@ui-kit';
 
 const HeaderWrapper = styled.header`
     display: flex;
     align-items: center;
     gap: 12px;
-    background-color: #fff;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #ccc;
 `;
 
 const AvatarWrapper = styled.div`
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: #ddd;
+    background-color: #ffefef;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -40,7 +41,7 @@ export const Header: FunctionComponent<Props> = ({ avatarUrl, name, onClick }) =
             <AvatarWrapper>
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt="avatar" /> : <User size={20} color="#555" />}
             </AvatarWrapper>
-            <Title size="h4">{name}</Title>
+            <Text size="b1">{name}</Text>
         </HeaderWrapper>
     );
 };

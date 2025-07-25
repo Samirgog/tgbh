@@ -8,6 +8,7 @@ import { useStoreById } from '@/api/hooks/useStoreById';
 import { List } from '@/Components/@ui-kit';
 import { Button } from '@/Components/@ui-kit/Button';
 import { Text, Title } from '@/Components/@ui-kit/Typography';
+import { RUBLE_SYMBOL } from '@/Consts';
 import { RoutesCreator, StepBusinessEditor } from '@/Enums';
 import { useTelegramBackButton } from '@/Hooks/useTelegramBackButton';
 import { useBusinessEditorStore } from '@/Store/BusinessEditor';
@@ -121,13 +122,17 @@ export const BusinessManagementScreen: FunctionComponent = () => {
                 id,
                 name,
                 priority,
-                products: products?.map(({ id, name, description, imageName, imageUrl, priceAmount }) => ({
+                products: products?.map(({ id, name, description, imageName, imageUrl, priceAmount, parameters }) => ({
                     id,
                     name,
                     description: description ?? undefined,
-                    imageName,
-                    imageUrl,
-                    priceAmount,
+                    image: { url: imageUrl ?? '', name: imageName ?? '' },
+                    price: { amount: priceAmount, currency: RUBLE_SYMBOL },
+                    parameters: parameters?.map(({ id, text, priceAmount }) => ({
+                        id,
+                        text,
+                        price: { amount: priceAmount!, currency: RUBLE_SYMBOL },
+                    })),
                 })),
                 image: { url: imageUrl ?? '', name: imageName ?? '' },
             })),
@@ -193,31 +198,31 @@ export const BusinessManagementScreen: FunctionComponent = () => {
                         </List.Item.Icon>
                         <List.Item.Content>Управление каталогом</List.Item.Content>
                     </List.Item>
-                    <List.Item>
-                        <List.Item.Icon>
-                            <BarChart size={20} />
-                        </List.Item.Icon>
-                        <List.Item.Content>Статистика</List.Item.Content>
-                    </List.Item>
-                    <List.Item>
-                        <List.Item.Icon>
-                            <MessageSquare size={20} />
-                        </List.Item.Icon>
-                        <List.Item.Content>Отзывы и вопросы</List.Item.Content>
-                    </List.Item>
-                    <List.Item>
-                        <List.Item.Icon>
-                            <CheckCircle size={20} />
-                        </List.Item.Icon>
-                        <List.Item.Content>Статус магазина</List.Item.Content>
-                    </List.Item>
+                    {/*<List.Item>*/}
+                    {/*    <List.Item.Icon>*/}
+                    {/*        <BarChart size={20} />*/}
+                    {/*    </List.Item.Icon>*/}
+                    {/*    <List.Item.Content>Статистика</List.Item.Content>*/}
+                    {/*</List.Item>*/}
+                    {/*<List.Item>*/}
+                    {/*    <List.Item.Icon>*/}
+                    {/*        <MessageSquare size={20} />*/}
+                    {/*    </List.Item.Icon>*/}
+                    {/*    <List.Item.Content>Отзывы и вопросы</List.Item.Content>*/}
+                    {/*</List.Item>*/}
+                    {/*<List.Item>*/}
+                    {/*    <List.Item.Icon>*/}
+                    {/*        <CheckCircle size={20} />*/}
+                    {/*    </List.Item.Icon>*/}
+                    {/*    <List.Item.Content>Статус магазина</List.Item.Content>*/}
+                    {/*</List.Item>*/}
                 </List>
-                <ProItem>
-                    <Star size={20} />
-                    <Title size="h4" color="white">
-                        Premium
-                    </Title>
-                </ProItem>
+                {/*<ProItem>*/}
+                {/*    <Star size={20} />*/}
+                {/*    <Title size="h4" color="white">*/}
+                {/*        Premium*/}
+                {/*    </Title>*/}
+                {/*</ProItem>*/}
             </ListContainer>
         </Container>
     );

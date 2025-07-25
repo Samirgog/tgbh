@@ -8,7 +8,7 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    background: #fff;
+    background: var(--tg-theme-secondary-bg-color, #fff);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
@@ -20,7 +20,7 @@ const Option = styled.div<{ $selected: boolean }>`
     justify-content: space-between;
     padding: 12px 16px;
     cursor: pointer;
-    background: ${({ $selected }) => ($selected ? '#f0f0f5' : 'transparent')};
+    background: ${({ $selected }) => ($selected ? 'var(--tg-theme-bg-color)' : 'transparent')};
     transition: background 0.2s ease-in-out;
 `;
 

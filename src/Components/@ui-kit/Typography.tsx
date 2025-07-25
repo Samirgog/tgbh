@@ -50,12 +50,24 @@ const typographyStyles = css<TypographyStyles>`
     font-size: ${({ size }) =>
         size ? titleSizes[size as keyof typeof titleSizes] || textSizes[size as keyof typeof textSizes] : '16px'};
     font-weight: ${({ weight }) => (weight ? fontWeights[weight] : 400)};
-    color: ${({ color, $consumerTheme }) => {
+    color: ${({ color, $consumerTheme, theme }) => {
         if ($consumerTheme && color) {
             return $consumerTheme.colors[color];
         }
 
-        return color ? colors[color] : colors.general;
+        if (color === 'secondary') {
+            return theme.colors.textSecondary;
+        }
+
+        if (color === 'accent') {
+            return theme.colors.accent;
+        }
+        if (color === 'white') {
+            return theme.colors.white;
+        }
+
+        return theme.colors.textPrimary;
+        // return color ? colors[color] : colors.general;
     }};
     letter-spacing: -0.03em;
     text-decoration: ${({ underline, strikethrough }) =>
