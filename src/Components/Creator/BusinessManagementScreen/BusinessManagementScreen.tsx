@@ -174,25 +174,25 @@ export const BusinessManagementScreen: FunctionComponent = () => {
             </Button>
             <ListContainer>
                 <List>
-                    <List.Item onClick={handleEditBusinessInfo}>
+                    <List.Item onClick={handleEditBusinessInfo} key="business">
                         <List.Item.Icon>
                             <Edit size={20} />
                         </List.Item.Icon>
                         <List.Item.Content>Основные настройки</List.Item.Content>
                     </List.Item>
-                    <List.Item onClick={handleEditReceive}>
+                    <List.Item onClick={handleEditReceive} key="receive">
                         <List.Item.Icon>
                             <Truck size={20} />
                         </List.Item.Icon>
                         <List.Item.Content>Способы получения</List.Item.Content>
                     </List.Item>
-                    <List.Item onClick={handleEditPayment}>
+                    <List.Item onClick={handleEditPayment} key="payment">
                         <List.Item.Icon>
                             <CreditCard size={20} />
                         </List.Item.Icon>
                         <List.Item.Content>Способы оплаты</List.Item.Content>
                     </List.Item>
-                    <List.Item onClick={handleEditCatalog}>
+                    <List.Item onClick={handleEditCatalog} key="catalog">
                         <List.Item.Icon>
                             <LayoutGrid size={20} />
                         </List.Item.Icon>

@@ -21,7 +21,9 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid ${({ theme, checked }) => (checked ? theme.colors.primary : theme.colors.border)};
+    border: 2px solid
+        ${({ checked }) =>
+            checked ? 'var(--tg-theme-button-color, #007aff)' : 'var(--tg-theme-secondary-bg-color, #eee)'};
     background: ${({ theme, checked }) => (checked ? theme.colors.primary : 'transparent')};
     transition: all 0.2s ease-in-out;
 

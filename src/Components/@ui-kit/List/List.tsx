@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import { Item } from '@/Components/@ui-kit/List/Sections';
 
 export const Container = styled.div`
-    background: white;
+    background: var(--tg-theme-bg-color, #fff);
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -27,7 +27,7 @@ const ListWrapper = styled.ul`
 
     li {
         &:not(:last-child) {
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #ddd);
         }
     }
 `;

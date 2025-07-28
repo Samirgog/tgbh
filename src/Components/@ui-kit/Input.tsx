@@ -15,22 +15,23 @@ const StyledInput = styled.input<{ $invalid: boolean }>`
     padding: 13px 16px;
     font-size: 14px;
     border-radius: 12px;
-    border: 1.8px solid ${({ theme }) => theme.colors.border};
-    background: ${({ theme }) => theme.colors.input.background};
+    border: 1.8px solid var(--tg-theme-secondary-bg-color, #e2e2e2);
+    background: var(--tg-theme-section-bg-color, #f4f4f5);
+    color: var(--tg-theme-text-color, #333);
 
     &::placeholder {
-        color: ${({ theme }) => theme.colors.placeholder};
+        color: var(--tg-theme-subtitle-text-color, #707579);
     }
 
     &:focus {
-        border-color: ${({ theme }) => theme.colors.primary};
+        border-color: var(--tg-theme-button-color, #007aff);
         outline: none;
     }
 
     ${({ $invalid }) =>
         $invalid &&
         css`
-            border-color: ${({ theme }) => theme.colors.error};
+            border-color: var(--tg-theme-destructive-text-color, #df3f40);
         `}
 `;
 

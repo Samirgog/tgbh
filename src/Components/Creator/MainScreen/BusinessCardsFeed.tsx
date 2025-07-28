@@ -1,6 +1,6 @@
 import { FunctionComponent, HTMLAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/Components/@ui-kit';
@@ -24,25 +24,34 @@ const FeedContainer = styled.div`
 
 const CardContainer = styled.div`
     min-width: 250px;
-    background: ${({ theme }) => theme.colors.backgroundSecondary};
+    background: var(--tg-theme-bg-color, #fff);
     border-radius: 24px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     cursor: pointer;
-    border: 1px solid #aaa;
+    ${({ theme }) => {
+        if (theme.mode === 'dark') {
+            return css`
+                border: 1px solid var(--tg-theme-hint-color, #fff);
+            `;
+        }
+
+        return css`
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        `;
+    }}
     padding: 12px;
 `;
 
 const ImageContainer = styled.div`
     width: 100%;
     height: 148px;
-    padding: 10px;
 
     img {
         width: 100%;
         height: 148px;
-        border: 24px;
+        border-radius: 24px;
     }
 `;
 

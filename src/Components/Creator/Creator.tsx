@@ -24,41 +24,41 @@ export const Creator: FunctionComponent = () => {
                     <Route
                         path={RoutesCreator.MAIN}
                         element={
-                            <motion.div {...pageVariants}>
-                                <MainScreen />
-                            </motion.div>
+                            // <motion.div {...pageVariants}>
+                            <MainScreen />
+                            // </motion.div>
                         }
                     />
                     <Route
                         path={RoutesCreator.PROFILE}
                         element={
-                            <motion.div {...pageVariants}>
-                                <ProfileScreen />
-                            </motion.div>
+                            // <motion.div {...pageVariants}>
+                            <ProfileScreen />
+                            // </motion.div>
                         }
                     />
                     <Route
                         path={RoutesCreator.BUSINESS_EDITOR}
                         element={
-                            <motion.div {...pageVariants}>
-                                <BusinessEditorScreen />
-                            </motion.div>
+                            // <motion.div {...pageVariants}>
+                            <BusinessEditorScreen />
+                            // </motion.div>
                         }
                     />
                     <Route
                         path={RoutesCreator.BUSINESS_MANAGEMENT}
                         element={
-                            <motion.div {...pageVariants}>
-                                <BusinessManagementScreen />
-                            </motion.div>
+                            // <motion.div {...pageVariants}>
+                            <BusinessManagementScreen />
+                            // </motion.div>
                         }
                     />
                     <Route
                         path={RoutesCreator.BUSINESS_PREVIEW}
                         element={
-                            <motion.div {...pageVariants}>
-                                <StorePreview />
-                            </motion.div>
+                            // <motion.div {...pageVariants}>
+                            <StorePreview />
+                            // </motion.div>
                         }
                     />
                 </Routes>

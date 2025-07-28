@@ -29,7 +29,6 @@ const Content = styled.div`
     gap: ${({ theme }) => theme.spacing(3)};
     padding: 16px;
     margin: -16px -16px;
-    height: 100%;
 `;
 
 const EmptyContainer = styled.div`
@@ -57,8 +56,11 @@ export const MainScreen: FunctionComponent = () => {
         <Container>
             <Header name={`${user.firstName} ${user.lastName}`} />
             <Content>
-                {stores?.length < 0 ? (
+                {stores?.length > 0 ? (
                     <>
+                        <Button onClick={handleClickAddCard} style={{ marginBottom: '8px', width: '100%' }}>
+                            Создать
+                        </Button>
                         <Title size="h4" weight="medium">
                             Мои Магазины
                         </Title>

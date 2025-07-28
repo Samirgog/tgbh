@@ -21,7 +21,7 @@ const MAX_PARAMETERS_COUNT = 3;
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing(3)};
+    gap: ${({ theme }) => theme.spacing(2)};
     height: 100%;
     overflow: auto;
 `;
@@ -30,19 +30,12 @@ const Form = styled.form`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
 `;
 
 const FormInner = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing(2)};
-`;
-
-const ButtonWrapper = styled.div`
-    display: flex;
-    align-self: center;
-    margin-top: ${({ theme }) => theme.spacing(3)};
 `;
 
 const InputWrapper = styled.div`
@@ -237,7 +230,10 @@ export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onS
                                         render={({ field }) => <Input {...field} placeholder="Цена" />}
                                     />
                                     <IconButton type="button" onClick={() => remove(index)}>
-                                        <Trash size={20} color="red" />
+                                        <Trash
+                                            size={20}
+                                            style={{ color: 'var(--tg-theme-destructive-text-color, #df3f40)' }}
+                                        />
                                     </IconButton>
                                 </ParamRow>
                             ))}
@@ -249,9 +245,9 @@ export const DrawerCatalogCard: FunctionComponent<Props> = ({ open, onClose, onS
                             </AddIcon>
                         )}
                     </FormInner>
-                    <ButtonWrapper>
-                        <Button type="submit">Сохранить</Button>
-                    </ButtonWrapper>
+                    <Button type="submit" style={{ marginTop: '16px', marginBottom: '8px' }}>
+                        Сохранить
+                    </Button>
                 </Form>
             </Container>
         </Drawer>

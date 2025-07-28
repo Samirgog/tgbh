@@ -10,7 +10,7 @@ const Container = styled.div`
     align-items: center;
     gap: ${({ theme }) => theme.spacing(1)};
     cursor: pointer;
-    color: ${({ theme }) => theme.colors.link.primary};
+    color: var(--tg-theme-button-color, #007aff);
     font-size: 16px;
     padding: 8px 0;
 `;
@@ -25,7 +25,7 @@ const FileItem = styled.div<{ $status?: 'success' | 'error' }>`
     ${({ $status }) => {
         if ($status === 'success') {
             return css`
-                background-color: #f4f4f7;
+                background-color: var(--tg-theme-secondary-bg-color, #fff);
             `;
         }
 

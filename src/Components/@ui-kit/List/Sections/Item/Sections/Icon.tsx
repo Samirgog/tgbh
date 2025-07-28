@@ -10,7 +10,7 @@ const ListItemIcon = styled.div`
     margin-right: 12px;
 
     svg {
-        color: #b91e23;
+        color: var(--tg-theme-accent-text-color, #3390ec);
     }
 `;
 

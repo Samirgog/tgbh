@@ -1,13 +1,10 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { ThemeProvider, useTheme } from 'styled-components';
-import { useShallow } from 'zustand/react/shallow';
+import { ThemeProvider } from 'styled-components';
 
 import { useAuth } from '@/api/hooks/useAuth';
-import { Consumer } from '@/Components/Consumer';
 import { Creator } from '@/Components/Creator';
-import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 import { GlobalStyles } from '@/Styles/global';
 import { theme as defaultTheme } from '@/Styles/theme';
 
@@ -42,9 +39,8 @@ function App() {
                         background: themeParams.secondary_bg_color ?? defaultTheme.colors.input.background,
                     },
                 },
+                mode: tg.colorScheme,
             });
-
-            console.log('🌈 Тема пользователя:', themeParams);
         }
     }, []);
 

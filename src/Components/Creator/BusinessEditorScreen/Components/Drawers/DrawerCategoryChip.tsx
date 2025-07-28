@@ -16,7 +16,7 @@ import { Category } from '@/Models/Catalog';
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing(3)};
+    gap: ${({ theme }) => theme.spacing(2)};
     height: 100%;
 `;
 
@@ -31,11 +31,6 @@ const FormInner = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing(2)};
-`;
-
-const ButtonWrapper = styled.div`
-    display: flex;
-    align-self: center;
 `;
 
 type CategoryForm = {
@@ -115,9 +110,9 @@ export const DrawerCategoryChip: FunctionComponent<Props> = ({ open = false, onC
                             )}
                         />
                     </FormInner>
-                    <ButtonWrapper>
-                        <Button type="submit">Сохранить</Button>
-                    </ButtonWrapper>
+                    <Button type="submit" style={{ marginTop: '16px', marginBottom: '8px' }}>
+                        Сохранить
+                    </Button>
                 </Form>
             </Container>
         </Drawer>

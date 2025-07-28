@@ -1,4 +1,5 @@
 export const theme = {
+    mode: 'light',
     colors: {
         primary: '#007aff',
         secondary: '#FBBF24',

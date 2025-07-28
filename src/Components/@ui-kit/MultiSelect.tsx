@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import React, { Fragment, FunctionComponent, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { Text } from '@/Components/@ui-kit/Typography';
 
@@ -8,10 +8,21 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    background: var(--tg-theme-secondary-bg-color, #fff);
+    background: var(--tg-theme-bg-color, #fff);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+
+    ${({ theme }) => {
+        if (theme.mode === 'dark') {
+            return css`
+                border: 1px solid var(--tg-theme-hint-color, #fff);
+            `;
+        }
+
+        return css`
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        `;
+    }}
 `;
 
 const Option = styled.div<{ $selected: boolean }>`
@@ -20,14 +31,24 @@ const Option = styled.div<{ $selected: boolean }>`
     justify-content: space-between;
     padding: 12px 16px;
     cursor: pointer;
-    background: ${({ $selected }) => ($selected ? 'var(--tg-theme-bg-color)' : 'transparent')};
+    background: ${({ $selected }) => ($selected ? 'var(--tg-theme-secondary-bg-color)' : 'transparent')};
     transition: background 0.2s ease-in-out;
 `;
 
 const Divider = styled.div`
     width: 100%;
     height: 1px;
-    background-color: rgba(0, 0, 0, 0.15);
+    ${({ theme }) => {
+        if (theme.mode === 'dark') {
+            return css`
+                background-color: var(--tg-theme-hint-color, #fff);
+            `;
+        }
+
+        return css`
+            background-color: rgba(0, 0, 0, 0.15);
+        `;
+    }}
 `;
 
 type Option = { label: string; value: string };

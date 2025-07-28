@@ -26,19 +26,11 @@ import { useBusinessEditorStore } from '@/Store/BusinessEditor';
 
 import { DrawerCatalogCard, DrawerCategoryChip, DrawerThemeSettings } from '../Drawers';
 
-const Header = styled.div`
-    display: flex;
-    width: 100%;
-    height: 48px;
-    padding-bottom: 8px;
-`;
-
 const Body = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
     gap: ${({ theme }) => theme.spacing(2)};
-    border-top: 1px solid #ddd;
     margin: -16px -16px;
     padding: 16px;
 `;
@@ -359,7 +351,6 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                 {/*    <Button onClick={mode === 'edit' ? handleSave : handlePublish}>*/}
                 {/*        {mode === 'edit' ? 'Сохранить' : 'Опубликовать'}*/}
                 {/*    </Button>*/}
-                {/*    <Toolbar position="right" onSelectTheme={openThemeSettingsDrawer} onSelectPreview={handlePreview} />*/}
                 {/*</Header>*/}
                 <Body>
                     {categories?.length > 0 ? (
@@ -397,6 +388,12 @@ export const StepCatalogConstructor: FunctionComponent = () => {
                                     />
                                 </CatalogSection>
                             ))}
+                            <Toolbar
+                                position="bottom-right"
+                                onSelectTheme={openThemeSettingsDrawer}
+                                onSelectPreview={handlePreview}
+                                onSelectSave={handlePublish}
+                            />
                         </>
                     ) : (
                         <EmptyContainer>
