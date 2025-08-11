@@ -10,7 +10,7 @@ dotenv.config();
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react(), nodePolyfills()],
-    base: '/',
+    base: '/tgbh/',
     resolve: {
         alias: [{ find: '@', replacement: path.resolve(__dirname, './src') }],
     },
