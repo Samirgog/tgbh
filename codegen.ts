@@ -5,7 +5,7 @@ dotenv.config();
 
 const config: CodegenConfig = {
     overwrite: true,
-    schema: process.env.VITE_PUBLIC_API_URL || 'http://localhost:3000/graphql',
+    schema: process.env.VITE_PUBLIC_API_URL || 'https://samirgog-tgbh-backend-2d90.twc1.net/graphql',
     documents: ['src/api/graphql/queries/*.ts'],
     generates: {
         'src/api/generated/index.ts': {
@@ -22,6 +22,7 @@ const config: CodegenConfig = {
                 withHooks: true,
                 dedupeFragments: true,
                 fetcher: 'graphql-request',
+                rawRequest: false,
             },
         },
         'src/api/generated/schema.graphql': {

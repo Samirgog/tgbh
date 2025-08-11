@@ -21,9 +21,10 @@ type Category {
 }
 
 input CategoryInput {
+  id: ID
   imageName: String
   imageUrl: String
-  name: String
+  name: String!
   priority: Float
   products: [ProductInput!]
 }

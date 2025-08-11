@@ -1,4 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
+// @ts-ignore
 import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
@@ -45,9 +46,10 @@ export type TCategory = {
 };
 
 export type TCategoryInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   imageName?: InputMaybe<Scalars['String']['input']>;
   imageUrl?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
   priority?: InputMaybe<Scalars['Float']['input']>;
   products?: InputMaybe<Array<TProductInput>>;
 };
