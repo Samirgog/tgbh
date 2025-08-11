@@ -1,15 +1,15 @@
 export enum RoutesCreator {
-    MAIN = '/',
-    BUSINESS_EDITOR = '/business-editor',
-    BUSINESS_MANAGEMENT = '/business-management',
-    BUSINESS_PREVIEW = '/business-preview',
-    PROFILE = '/profile',
+    MAIN = '/tgbh/',
+    BUSINESS_EDITOR = '/tgbh/business-editor',
+    BUSINESS_MANAGEMENT = '/tgbh/business-management',
+    BUSINESS_PREVIEW = '/tgbh/business-preview',
+    PROFILE = '/tgbh/profile',
 }
 
 export enum RoutesConsumer {
-    MAIN = '/',
-    ORDER = '/order',
-    ADDRESS_MAP = '/addresses-map',
+    MAIN = '/tgbh/',
+    ORDER = '/tgbh/order',
+    ADDRESS_MAP = '/tgbh/addresses-map',
 }
 
 export enum StepBusinessEditor {

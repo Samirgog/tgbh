@@ -26,7 +26,7 @@ export const theme = {
             categoryChip: {
                 backgroundColor: '#ba1924',
             },
-            placeholderImage: '/assets/placeholder_image.png',
+            placeholderImage: '/tgbh/assets/placeholder_image.png',
         },
     },
     spacing: (factor: number) => `${factor * 8}px`,
